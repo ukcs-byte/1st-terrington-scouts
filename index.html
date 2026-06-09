@@ -1,544 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>1st Terrington Scout Group</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --purple-deep: #3C2A6B;
-  --purple-mid: #5B3FA0;
-  --purple-bright: #7C5DC7;
-  --purple-light: #A98FE0;
-  --purple-pale: #EDE8F8;
-  --purple-ultra: #F6F2FD;
-  --gold: #F0A500;
-  --gold-light: #FFC845;
-  --white: #FFFFFF;
-  --off-white: #FAFAFA;
-  --text-dark: #1A1128;
-  --text-mid: #4A3870;
-  --text-muted: #8B7BA8;
-  --border: rgba(92,63,160,0.15);
-  --radius: 12px;
-  --radius-lg: 20px;
-  --shadow: 0 4px 24px rgba(60,42,107,0.12);
-  --shadow-sm: 0 2px 8px rgba(60,42,107,0.08);
+  --purple-deep:#3C2A6B;--purple-mid:#5B3FA0;--purple-bright:#7C5DC7;
+  --purple-light:#A98FE0;--purple-pale:#EDE8F8;--purple-ultra:#F6F2FD;
+  --gold:#F0A500;--gold-light:#FFC845;--white:#FFFFFF;--off-white:#FAFAFA;
+  --text-dark:#1A1128;--text-mid:#4A3870;--text-muted:#8B7BA8;
+  --border:rgba(92,63,160,0.15);--radius:12px;--radius-lg:20px;
+  --shadow:0 4px 24px rgba(60,42,107,0.12);--shadow-sm:0 2px 8px rgba(60,42,107,0.08);
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--white);
-  color: var(--text-dark);
-  line-height: 1.6;
-}
-
-/* ── UTILITY ── */
-.container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--purple-mid); color: white;
-  padding: 12px 24px; border-radius: 8px; border: none;
-  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600;
-  cursor: pointer; text-decoration: none; transition: all 0.2s;
-}
-.btn-primary:hover { background: var(--purple-deep); transform: translateY(-1px); }
-.btn-secondary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--purple-mid);
-  padding: 11px 24px; border-radius: 8px;
-  border: 2px solid var(--purple-mid);
-  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600;
-  cursor: pointer; text-decoration: none; transition: all 0.2s;
-}
-.btn-secondary:hover { background: var(--purple-pale); }
-.btn-gold {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--gold); color: var(--purple-deep);
-  padding: 12px 24px; border-radius: 8px; border: none;
-  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700;
-  cursor: pointer; text-decoration: none; transition: all 0.2s;
-}
-.btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
-.section-label {
-  font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--purple-bright); margin-bottom: 10px;
-}
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 38px; font-weight: 700; color: var(--purple-deep); line-height: 1.2;
-}
-.hidden { display: none !important; }
-.tag {
-  display: inline-block; font-size: 11px; font-weight: 600;
-  padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px;
-}
-.tag-beaver { background: #FFE8CC; color: #7A3800; }
-.tag-cub { background: #FFF3CC; color: #6B4A00; }
-.tag-scout { background: var(--purple-pale); color: var(--purple-deep); }
-.tag-explorer { background: #D1F0E8; color: #0A5438; }
-.tag-all { background: #F0EBF8; color: var(--purple-mid); }
-
-/* ── TOP BAR ── */
-#topbar {
-  background: var(--purple-deep);
-  padding: 8px 0;
-  font-size: 13px; color: rgba(255,255,255,0.8);
-}
-#topbar .container { display: flex; justify-content: space-between; align-items: center; }
-#topbar a { color: rgba(255,255,255,0.8); text-decoration: none; }
-#topbar a:hover { color: white; }
-
-/* ── NAV ── */
-nav {
-  background: white; padding: 0;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 1000;
-  box-shadow: var(--shadow-sm);
-}
-.nav-inner { display: flex; align-items: center; gap: 0; height: 68px; }
-.nav-logo { display: flex; align-items: center; gap: 14px; text-decoration: none; margin-right: 40px; }
-.nav-logo-img {
-  width: 52px; height: 52px;
-  background: var(--purple-deep);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.scout-fleur {
-  width: 32px; height: 32px;
-}
-.nav-logo-text { line-height: 1.2; }
-.nav-logo-text span:first-child { display: block; font-weight: 800; font-size: 15px; color: var(--purple-deep); }
-.nav-logo-text span:last-child { display: block; font-size: 11px; color: var(--text-muted); }
-.nav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
-.nav-link {
-  font-size: 14px; font-weight: 500; color: var(--text-mid);
-  padding: 8px 14px; border-radius: 8px; cursor: pointer;
-  text-decoration: none; transition: all 0.15s; white-space: nowrap;
-  background: none; border: none; font-family: 'Inter', sans-serif;
-}
-.nav-link:hover, .nav-link.active { color: var(--purple-mid); background: var(--purple-pale); }
-.nav-actions { display: flex; gap: 10px; margin-left: auto; }
-.btn-admin {
-  font-size: 13px; font-weight: 600; padding: 8px 16px;
-  background: var(--purple-deep); color: white;
-  border: none; border-radius: 8px; cursor: pointer;
-  font-family: 'Inter', sans-serif; transition: all 0.15s;
-}
-.btn-admin:hover { background: var(--purple-bright); }
-
-/* ── PAGE SYSTEM ── */
-.page { display: none; }
-.page.active { display: block; }
-
-/* ── HERO ── */
-#hero {
-  background: linear-gradient(135deg, var(--purple-deep) 0%, #4A2D8A 50%, #5B3FA0 100%);
-  padding: 90px 0 80px;
-  position: relative; overflow: hidden;
-}
-#hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; }
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.12); color: white;
-  padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;
-  border: 1px solid rgba(255,255,255,0.2); margin-bottom: 24px;
-}
-.hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 56px; font-weight: 800; color: white; line-height: 1.1;
-  margin-bottom: 20px;
-}
-.hero-title span { color: var(--gold); }
-.hero-desc { font-size: 18px; color: rgba(255,255,255,0.85); margin-bottom: 36px; line-height: 1.7; }
-.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-.hero-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 40px; }
-.hero-stat {
-  background: rgba(255,255,255,0.1); border-radius: 12px; padding: 18px;
-  border: 1px solid rgba(255,255,255,0.15); text-align: center;
-}
-.hero-stat strong { display: block; font-size: 32px; font-weight: 800; color: white; }
-.hero-stat span { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; display: block; }
-.hero-visual {
-  display: flex; justify-content: center; align-items: center;
-}
-.hero-emblem {
-  width: 280px; height: 280px; border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.2);
-  display: flex; align-items: center; justify-content: center;
-}
-.hero-emblem-inner {
-  width: 220px; height: 220px; border-radius: 50%;
-  background: rgba(255,255,255,0.12);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 8px;
-}
-.big-fleur { width: 120px; height: 120px; }
-
-/* ── SECTIONS ── */
-.section { padding: 80px 0; }
-.section-alt { background: var(--purple-ultra); }
-.section-header { text-align: center; margin-bottom: 52px; }
-.section-header p { font-size: 18px; color: var(--text-muted); margin-top: 12px; max-width: 560px; margin-left: auto; margin-right: auto; }
-
-/* ── GROUPS GRID ── */
-.groups-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
-.group-card {
-  border-radius: var(--radius-lg); padding: 28px 24px;
-  text-align: center; cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s; text-decoration: none; display: block;
-}
-.group-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
-.group-card.beavers { background: linear-gradient(135deg, #FFF0E0, #FFE0C0); border-color: #F0A500; }
-.group-card.cubs { background: linear-gradient(135deg, #FFF8E0, #FFF0B0); border-color: #D4A017; }
-.group-card.scouts { background: linear-gradient(135deg, var(--purple-pale), #D4C5F5); border-color: var(--purple-light); }
-.group-card.explorers { background: linear-gradient(135deg, #E0F5EE, #C0EAD8); border-color: #1D9E75; }
-.group-icon { font-size: 48px; margin-bottom: 14px; }
-.group-card h3 { font-size: 20px; font-weight: 700; color: var(--purple-deep); margin-bottom: 6px; }
-.group-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
-.group-age {
-  font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
-  background: rgba(255,255,255,0.6); color: var(--text-mid); display: inline-block;
-}
-
-/* ── EVENTS ── */
-.events-list { display: flex; flex-direction: column; gap: 16px; }
-.event-card {
-  display: grid; grid-template-columns: 80px 1fr auto;
-  gap: 20px; align-items: center;
-  background: white; border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px;
-  transition: all 0.15s;
-}
-.event-card:hover { border-color: var(--purple-light); box-shadow: var(--shadow-sm); }
-.event-date {
-  background: var(--purple-deep); color: white;
-  border-radius: 10px; padding: 12px 8px; text-align: center;
-}
-.event-date .day { font-size: 28px; font-weight: 800; line-height: 1; }
-.event-date .month { font-size: 11px; font-weight: 600; opacity: 0.8; text-transform: uppercase; }
-.event-info h3 { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
-.event-info p { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
-.event-meta { display: flex; gap: 12px; align-items: center; }
-.event-meta span { font-size: 12px; color: var(--text-muted); }
-.event-meta svg { width: 14px; height: 14px; opacity: 0.5; }
-.filter-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
-.filter-btn {
-  font-size: 13px; font-weight: 500; padding: 7px 16px;
-  border-radius: 20px; border: 1.5px solid var(--border);
-  background: white; color: var(--text-mid);
-  cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s;
-}
-.filter-btn:hover, .filter-btn.active {
-  background: var(--purple-mid); color: white; border-color: var(--purple-mid);
-}
-
-/* ── NEWS ── */
-.news-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-.news-card {
-  background: white; border: 1px solid var(--border);
-  border-radius: var(--radius-lg); overflow: hidden;
-  transition: all 0.2s; cursor: pointer;
-}
-.news-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-.news-img {
-  height: 180px;
-  background: linear-gradient(135deg, var(--purple-mid), var(--purple-bright));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 48px;
-}
-.news-body { padding: 20px; }
-.news-body .tag { margin-bottom: 10px; }
-.news-body h3 { font-size: 17px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; line-height: 1.4; }
-.news-body p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
-.news-body .date { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
-
-/* ── GALLERY ── */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  grid-auto-rows: 180px;
-  gap: 8px;
-}
-.gallery-item {
-  border-radius: 8px; overflow: hidden;
-  cursor: pointer; position: relative;
-  background: var(--purple-pale);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 40px; transition: all 0.2s;
-}
-.gallery-item:hover { opacity: 0.85; transform: scale(1.02); }
-.gallery-item.wide { grid-column: span 2; }
-.gallery-item.tall { grid-row: span 2; }
-.gallery-item .overlay {
-  position: absolute; inset: 0;
-  background: var(--purple-deep);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  color: white; opacity: 0; transition: opacity 0.2s;
-  font-size: 14px; font-weight: 500; text-align: center; padding: 16px;
-}
-.gallery-item:hover .overlay { opacity: 1; }
-.gallery-bg-1 { background: linear-gradient(135deg, #C4A8F0, #9B77E0); }
-.gallery-bg-2 { background: linear-gradient(135deg, #A8D4F0, #77AEE0); }
-.gallery-bg-3 { background: linear-gradient(135deg, #F0C4A8, #E09B77); }
-.gallery-bg-4 { background: linear-gradient(135deg, #A8F0C4, #77E0AE); }
-.gallery-bg-5 { background: linear-gradient(135deg, #F0A8C4, #E07799); }
-.gallery-bg-6 { background: linear-gradient(135deg, #C4F0A8, #99E077); }
-.gallery-bg-7 { background: linear-gradient(135deg, #F0D4A8, #E0B877); }
-.gallery-bg-8 { background: linear-gradient(135deg, #A8C4F0, #7799E0); }
-
-/* ── DOWNLOADS ── */
-.downloads-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
-.download-item {
-  display: flex; align-items: center; gap: 16px;
-  background: white; border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 18px 20px;
-  transition: all 0.15s;
-}
-.download-item:hover { border-color: var(--purple-light); background: var(--purple-ultra); }
-.dl-icon {
-  width: 44px; height: 44px; border-radius: 10px;
-  background: var(--purple-pale); display: flex; align-items: center;
-  justify-content: center; font-size: 20px; flex-shrink: 0;
-}
-.dl-info { flex: 1; }
-.dl-info h4 { font-size: 14px; font-weight: 600; color: var(--text-dark); }
-.dl-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.dl-btn {
-  background: var(--purple-pale); color: var(--purple-mid);
-  border: none; border-radius: 8px; padding: 8px 14px;
-  font-size: 12px; font-weight: 600; cursor: pointer;
-  font-family: 'Inter', sans-serif; transition: all 0.15s;
-}
-.dl-btn:hover { background: var(--purple-mid); color: white; }
-
-/* ── JOIN FORM ── */
-.join-layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 60px; align-items: start; }
-.join-info h2 { font-family: 'Playfair Display', serif; font-size: 34px; color: var(--purple-deep); margin-bottom: 16px; }
-.join-info p { font-size: 16px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
-.join-perk { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
-.join-perk-icon { font-size: 20px; margin-top: 2px; }
-.join-perk p { font-size: 14px; color: var(--text-mid); margin: 0; }
-.form-card {
-  background: white; border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 36px;
-  box-shadow: var(--shadow-sm);
-}
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; }
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%; padding: 11px 14px;
-  border: 1.5px solid var(--border); border-radius: 8px;
-  font-family: 'Inter', sans-serif; font-size: 14px;
-  color: var(--text-dark); background: white;
-  transition: border-color 0.15s; outline: none;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  border-color: var(--purple-bright);
-  box-shadow: 0 0 0 3px rgba(124,93,199,0.12);
-}
-.form-group textarea { resize: vertical; min-height: 80px; }
-.form-success {
-  display: none; text-align: center; padding: 40px;
-}
-.form-success .icon { font-size: 48px; margin-bottom: 16px; }
-.form-success h3 { font-size: 22px; font-weight: 700; color: var(--purple-deep); margin-bottom: 8px; }
-.form-success p { color: var(--text-muted); }
-
-/* ── FUNDRAISING ── */
-.fundraising-hero {
-  background: linear-gradient(135deg, #3C2A6B, #5B3FA0);
-  border-radius: var(--radius-lg); padding: 48px;
-  text-align: center; color: white; margin-bottom: 48px;
-}
-.fundraising-hero h2 { font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 12px; }
-.fundraising-hero p { font-size: 16px; opacity: 0.85; margin-bottom: 28px; }
-.progress-bar-wrap {
-  background: rgba(255,255,255,0.2); border-radius: 100px;
-  height: 20px; margin: 20px 0 8px; overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%; border-radius: 100px;
-  background: var(--gold); width: 68%;
-  transition: width 1s ease;
-}
-.progress-label { font-size: 14px; opacity: 0.85; }
-.fundraise-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-.fundraise-card {
-  background: white; border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 28px; text-align: center;
-}
-.fundraise-card .f-icon { font-size: 40px; margin-bottom: 14px; }
-.fundraise-card h3 { font-size: 18px; font-weight: 700; color: var(--purple-deep); margin-bottom: 8px; }
-.fundraise-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
-
-/* ── FOOTER ── */
-footer {
-  background: var(--purple-deep); color: white;
-  padding: 60px 0 24px;
-}
-.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
-.footer-brand p { font-size: 14px; opacity: 0.75; line-height: 1.7; margin-top: 12px; }
-.footer-col h4 { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.6; margin-bottom: 14px; }
-.footer-col a { display: block; font-size: 14px; opacity: 0.8; text-decoration: none; margin-bottom: 8px; transition: opacity 0.15s; }
-.footer-col a:hover { opacity: 1; }
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 24px; display: flex;
-  justify-content: space-between; align-items: center;
-  font-size: 13px; opacity: 0.6;
-}
-
-/* ── ADMIN ── */
-.admin-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-  z-index: 2000; display: none; align-items: center; justify-content: center;
-}
-.admin-overlay.show { display: flex; }
-.admin-modal {
-  background: white; border-radius: 16px; padding: 40px;
-  width: 420px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-.admin-modal h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--purple-deep); margin-bottom: 6px; }
-.admin-modal p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
-.login-error { display: none; background: #FEE; border: 1px solid #F99; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #C00; margin-bottom: 14px; }
-
-/* ── ADMIN PANEL ── */
-.admin-panel {
-  min-height: 100vh;
-  background: var(--off-white);
-}
-.admin-topbar {
-  background: var(--purple-deep); color: white;
-  height: 60px; display: flex; align-items: center;
-  padding: 0 28px; gap: 20px;
-}
-.admin-topbar strong { font-size: 16px; }
-.admin-topbar span { font-size: 13px; opacity: 0.7; flex: 1; }
-.admin-logout {
-  background: rgba(255,255,255,0.15); color: white;
-  border: none; border-radius: 6px; padding: 7px 14px;
-  font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer;
-}
-.admin-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 60px); }
-.admin-sidebar {
-  background: white; border-right: 1px solid var(--border);
-  padding: 20px 0;
-}
-.admin-nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 20px; font-size: 14px; font-weight: 500;
-  color: var(--text-mid); cursor: pointer; transition: all 0.15s;
-  border: none; background: none; font-family: 'Inter', sans-serif;
-  width: 100%; text-align: left;
-}
-.admin-nav-item:hover { background: var(--purple-ultra); color: var(--purple-mid); }
-.admin-nav-item.active { background: var(--purple-pale); color: var(--purple-deep); font-weight: 600; border-right: 3px solid var(--purple-mid); }
-.admin-nav-item .icon { font-size: 18px; }
-.admin-main { padding: 32px; }
-.admin-section { display: none; }
-.admin-section.active { display: block; }
-.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-.admin-header h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--purple-deep); }
-.admin-table-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.admin-table { width: 100%; border-collapse: collapse; }
-.admin-table th { background: var(--purple-ultra); padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: 1px; }
-.admin-table td { padding: 14px 16px; font-size: 14px; border-top: 1px solid var(--border); color: var(--text-dark); }
-.admin-table tr:hover td { background: var(--purple-ultra); }
-.action-btn {
-  font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 6px;
-  border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-right: 6px;
-}
-.action-btn.edit { background: var(--purple-pale); color: var(--purple-mid); }
-.action-btn.edit:hover { background: var(--purple-mid); color: white; }
-.action-btn.delete { background: #FEE; color: #C00; }
-.action-btn.delete:hover { background: #C00; color: white; }
-.admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
-.admin-stat {
-  background: white; border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px;
-}
-.admin-stat .num { font-size: 32px; font-weight: 800; color: var(--purple-deep); }
-.admin-stat .lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-.add-form {
-  background: white; border: 1px solid var(--border);
-  border-radius: 12px; padding: 24px; margin-bottom: 24px;
-}
-.add-form h3 { font-size: 16px; font-weight: 600; color: var(--purple-deep); margin-bottom: 16px; }
-.add-form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-.add-form .form-group { margin-bottom: 0; }
-
-/* Notification */
-.notif {
-  position: fixed; bottom: 24px; right: 24px; z-index: 3000;
-  background: var(--purple-deep); color: white;
-  padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  transform: translateY(100px); opacity: 0;
-  transition: all 0.3s; pointer-events: none;
-}
-.notif.show { transform: translateY(0); opacity: 1; }
-
-@media (max-width: 900px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-visual { display: none; }
-  .hero-title { font-size: 38px; }
-  .groups-grid { grid-template-columns: repeat(2,1fr); }
-  .news-grid { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: repeat(2,1fr); }
-  .join-layout { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .admin-layout { grid-template-columns: 1fr; }
-  .admin-sidebar { display: none; }
-}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--white);color:var(--text-dark);line-height:1.6;}
+.container{max-width:1160px;margin:0 auto;padding:0 24px;}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--purple-mid);color:white;padding:12px 24px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-primary:hover{background:var(--purple-deep);transform:translateY(-1px);}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--purple-mid);padding:11px 24px;border-radius:8px;border:2px solid var(--purple-mid);font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-secondary:hover{background:var(--purple-pale);}
+.btn-gold{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--purple-deep);padding:12px 24px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-gold:hover{background:var(--gold-light);}
+.section-label{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--purple-bright);margin-bottom:10px;}
+.section-title{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--purple-deep);line-height:1.2;}
+.hidden{display:none!important;}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;}
+.tag-beaver{background:#FFE8CC;color:#7A3800;}
+.tag-cub{background:#FFF3CC;color:#6B4A00;}
+.tag-scout{background:var(--purple-pale);color:var(--purple-deep);}
+.tag-explorer{background:#D1F0E8;color:#0A5438;}
+.tag-all{background:#F0EBF8;color:var(--purple-mid);}
+#topbar{background:var(--purple-deep);padding:8px 0;font-size:13px;color:rgba(255,255,255,0.8);}
+#topbar .container{display:flex;justify-content:space-between;align-items:center;}
+#topbar a{color:rgba(255,255,255,0.8);text-decoration:none;}
+nav{background:white;padding:0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1000;box-shadow:var(--shadow-sm);}
+.nav-inner{display:flex;align-items:center;height:68px;}
+.nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;margin-right:40px;}
+.nav-logo-img{width:52px;height:52px;background:var(--purple-deep);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-logo-text{line-height:1.2;}
+.nav-logo-text span:first-child{display:block;font-weight:800;font-size:15px;color:var(--purple-deep);}
+.nav-logo-text span:last-child{display:block;font-size:11px;color:var(--text-muted);}
+.nav-links{display:flex;align-items:center;gap:2px;flex:1;}
+.nav-link{font-size:14px;font-weight:500;color:var(--text-mid);padding:8px 14px;border-radius:8px;cursor:pointer;text-decoration:none;transition:all 0.15s;white-space:nowrap;background:none;border:none;font-family:'Inter',sans-serif;}
+.nav-link:hover,.nav-link.active{color:var(--purple-mid);background:var(--purple-pale);}
+.nav-actions{display:flex;gap:10px;margin-left:auto;}
+.btn-admin{font-size:13px;font-weight:600;padding:8px 16px;background:var(--purple-deep);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.btn-admin:hover{background:var(--purple-bright);}
+.page{display:none;}
+.page.active{display:block;}
+#hero{background:linear-gradient(135deg,var(--purple-deep) 0%,#4A2D8A 50%,#5B3FA0 100%);padding:90px 0 80px;position:relative;overflow:hidden;}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid rgba(255,255,255,0.2);margin-bottom:24px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:56px;font-weight:800;color:white;line-height:1.1;margin-bottom:20px;}
+.hero-title span{color:var(--gold);}
+.hero-desc{font-size:18px;color:rgba(255,255,255,0.85);margin-bottom:36px;line-height:1.7;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;}
+.hero-stat{background:rgba(255,255,255,0.1);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.15);text-align:center;}
+.hero-stat strong{display:block;font-size:32px;font-weight:800;color:white;}
+.hero-stat span{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;display:block;}
+.hero-visual{display:flex;justify-content:center;align-items:center;}
+.hero-emblem{width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;}
+.hero-emblem-inner{width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;}
+.section{padding:80px 0;}
+.section-alt{background:var(--purple-ultra);}
+.section-header{text-align:center;margin-bottom:52px;}
+.section-header p{font-size:18px;color:var(--text-muted);margin-top:12px;max-width:560px;margin-left:auto;margin-right:auto;}
+.groups-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.group-card{border-radius:var(--radius-lg);padding:28px 24px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all 0.2s;text-decoration:none;display:block;}
+.group-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.group-card.beavers{background:linear-gradient(135deg,#FFF0E0,#FFE0C0);border-color:#F0A500;}
+.group-card.cubs{background:linear-gradient(135deg,#FFF8E0,#FFF0B0);border-color:#D4A017;}
+.group-card.scouts{background:linear-gradient(135deg,var(--purple-pale),#D4C5F5);border-color:var(--purple-light);}
+.group-card.explorers{background:linear-gradient(135deg,#E0F5EE,#C0EAD8);border-color:#1D9E75;}
+.group-icon{font-size:48px;margin-bottom:14px;}
+.group-card h3{font-size:20px;font-weight:700;color:var(--purple-deep);margin-bottom:6px;}
+.group-card p{font-size:13px;color:var(--text-muted);margin-bottom:10px;}
+.group-age{font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.6);color:var(--text-mid);display:inline-block;}
+.events-list{display:flex;flex-direction:column;gap:16px;}
+.event-card{display:grid;grid-template-columns:80px 1fr auto;gap:20px;align-items:center;background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.15s;}
+.event-card:hover{border-color:var(--purple-light);box-shadow:var(--shadow-sm);}
+.event-date{background:var(--purple-deep);color:white;border-radius:10px;padding:12px 8px;text-align:center;}
+.event-date .day{font-size:28px;font-weight:800;line-height:1;}
+.event-date .month{font-size:11px;font-weight:600;opacity:0.8;text-transform:uppercase;}
+.event-info h3{font-size:16px;font-weight:600;color:var(--text-dark);margin-bottom:4px;}
+.event-info p{font-size:14px;color:var(--text-muted);margin-bottom:8px;}
+.event-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.event-meta span{font-size:12px;color:var(--text-muted);}
+.filter-bar{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+.filter-btn{font-size:13px;font-weight:500;padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:white;color:var(--text-mid);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.filter-btn:hover,.filter-btn.active{background:var(--purple-mid);color:white;border-color:var(--purple-mid);}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.news-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.2s;cursor:pointer;}
+.news-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+.news-img{height:180px;background:linear-gradient(135deg,var(--purple-mid),var(--purple-bright));display:flex;align-items:center;justify-content:center;font-size:48px;}
+.news-body{padding:20px;}
+.news-body h3{font-size:17px;font-weight:600;color:var(--text-dark);margin-bottom:8px;line-height:1.4;margin-top:8px;}
+.news-body p{font-size:14px;color:var(--text-muted);line-height:1.6;}
+.news-body .date{font-size:12px;color:var(--text-muted);margin-top:12px;}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:180px;gap:8px;}
+.gallery-item{border-radius:8px;overflow:hidden;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;font-size:40px;transition:all 0.2s;}
+.gallery-item:hover{opacity:0.85;transform:scale(1.02);}
+.gallery-item.wide{grid-column:span 2;}
+.gallery-item .overlay{position:absolute;inset:0;background:var(--purple-deep);display:flex;align-items:center;justify-content:center;color:white;opacity:0;transition:opacity 0.2s;font-size:14px;font-weight:500;text-align:center;padding:16px;}
+.gallery-item:hover .overlay{opacity:1;}
+.downloads-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.download-item{display:flex;align-items:center;gap:16px;background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;transition:all 0.15s;}
+.download-item:hover{border-color:var(--purple-light);background:var(--purple-ultra);}
+.dl-icon{width:44px;height:44px;border-radius:10px;background:var(--purple-pale);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.dl-info{flex:1;}
+.dl-info h4{font-size:14px;font-weight:600;color:var(--text-dark);}
+.dl-info p{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.dl-btn{background:var(--purple-pale);color:var(--purple-mid);border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.dl-btn:hover{background:var(--purple-mid);color:white;}
+.join-layout{display:grid;grid-template-columns:1fr 1.6fr;gap:60px;align-items:start;}
+.join-info h2{font-family:'Playfair Display',serif;font-size:34px;color:var(--purple-deep);margin-bottom:16px;}
+.join-info p{font-size:16px;color:var(--text-muted);line-height:1.7;margin-bottom:20px;}
+.join-perk{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.form-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;box-shadow:var(--shadow-sm);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:6px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text-dark);background:white;transition:border-color 0.15s;outline:none;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--purple-bright);box-shadow:0 0 0 3px rgba(124,93,199,0.12);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.fundraising-hero{background:linear-gradient(135deg,#3C2A6B,#5B3FA0);border-radius:var(--radius-lg);padding:48px;text-align:center;color:white;margin-bottom:48px;}
+.fundraising-hero h2{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:12px;}
+.progress-bar-wrap{background:rgba(255,255,255,0.2);border-radius:100px;height:20px;margin:20px 0 8px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:100px;background:var(--gold);width:68%;}
+.fundraise-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.fundraise-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center;}
+.fundraise-card h3{font-size:18px;font-weight:700;color:var(--purple-deep);margin-bottom:8px;}
+.fundraise-card p{font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;}
+footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+.footer-brand p{font-size:14px;opacity:0.75;line-height:1.7;margin-top:12px;}
+.footer-col h4{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.6;margin-bottom:14px;}
+.footer-col a{display:block;font-size:14px;opacity:0.8;text-decoration:none;margin-bottom:8px;transition:opacity 0.15s;cursor:pointer;}
+.footer-col a:hover{opacity:1;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:0.6;}
+.admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:none;align-items:center;justify-content:center;}
+.admin-overlay.show{display:flex;}
+.admin-modal{background:white;border-radius:16px;padding:40px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.admin-modal h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--purple-deep);margin-bottom:6px;}
+.admin-modal p{font-size:14px;color:var(--text-muted);margin-bottom:28px;}
+.login-error{display:none;background:#FEE;border:1px solid #F99;border-radius:8px;padding:10px 14px;font-size:13px;color:#C00;margin-bottom:14px;}
+.admin-panel{min-height:100vh;background:var(--off-white);}
+.admin-topbar{background:var(--purple-deep);color:white;height:60px;display:flex;align-items:center;padding:0 28px;gap:20px;}
+.admin-topbar strong{font-size:16px;}
+.admin-topbar span{font-size:13px;opacity:0.7;flex:1;}
+.admin-logout{background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:7px 14px;font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;}
+.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);}
+.admin-sidebar{background:white;border-right:1px solid var(--border);padding:20px 0;}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:14px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all 0.15s;border:none;background:none;font-family:'Inter',sans-serif;width:100%;text-align:left;}
+.admin-nav-item:hover{background:var(--purple-ultra);color:var(--purple-mid);}
+.admin-nav-item.active{background:var(--purple-pale);color:var(--purple-deep);font-weight:600;border-right:3px solid var(--purple-mid);}
+.admin-main{padding:32px;}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+.admin-header h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--purple-deep);}
+.admin-table-wrap{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.admin-table{width:100%;border-collapse:collapse;}
+.admin-table th{background:var(--purple-ultra);padding:12px 16px;text-align:left;font-size:12px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:1px;}
+.admin-table td{padding:14px 16px;font-size:14px;border-top:1px solid var(--border);color:var(--text-dark);}
+.admin-table tr:hover td{background:var(--purple-ultra);}
+.action-btn{font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-right:6px;}
+.action-btn.edit{background:var(--purple-pale);color:var(--purple-mid);}
+.action-btn.edit:hover{background:var(--purple-mid);color:white;}
+.action-btn.delete{background:#FEE;color:#C00;}
+.action-btn.delete:hover{background:#C00;color:white;}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.admin-stat{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;}
+.admin-stat .num{font-size:32px;font-weight:800;color:var(--purple-deep);}
+.admin-stat .lbl{font-size:12px;color:var(--text-muted);margin-top:4px;}
+.add-form{background:white;border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:24px;}
+.add-form h3{font-size:16px;font-weight:600;color:var(--purple-deep);margin-bottom:16px;}
+.add-form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.add-form .form-group{margin-bottom:12px;}
+.notif{position:fixed;bottom:24px;right:24px;z-index:3000;background:var(--purple-deep);color:white;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.3s;pointer-events:none;}
+.notif.show{transform:translateY(0);opacity:1;}
+.loading{text-align:center;padding:40px;color:var(--text-muted);font-size:15px;}
+.empty-state{text-align:center;padding:48px;color:var(--text-muted);}
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div id="topbar">
   <div class="container">
     <span>📍 Terrington, North Yorkshire &nbsp;|&nbsp; Est. 1923</span>
-    <span>
-      <a href="tel:01653648200">📞 01653 648200</a> &nbsp;|&nbsp;
-      <a href="mailto:info@1stterringtonscouts.org.uk">✉ info@1stterringtonscouts.org.uk</a>
-    </span>
+    <span><a href="tel:01653648200">📞 01653 648200</a> &nbsp;|&nbsp; <a href="mailto:info@1stterringtonscouts.org.uk">✉ info@1stterringtonscouts.org.uk</a></span>
   </div>
 </div>
 
-<!-- NAV -->
 <nav>
   <div class="container">
     <div class="nav-inner">
       <a class="nav-logo" href="#" onclick="showPage('home');return false;">
         <div class="nav-logo-img">
-          <svg class="scout-fleur" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="32" height="38" viewBox="0 0 100 120" fill="none">
             <path d="M50 5 L60 35 L90 35 L67 54 L76 84 L50 65 L24 84 L33 54 L10 35 L40 35 Z" fill="#F0A500"/>
             <path d="M50 40 C50 40 38 52 38 65 C38 72 43 78 50 78 C57 78 62 72 62 65 C62 52 50 40 50 40 Z" fill="white"/>
             <circle cx="50" cy="62" r="6" fill="#5B3FA0"/>
             <path d="M35 90 L50 82 L65 90 L65 100 L35 100 Z" fill="#F0A500"/>
-            <text x="50" y="115" text-anchor="middle" font-size="8" fill="white" font-family="Inter" font-weight="700">SCOUTS</text>
           </svg>
         </div>
-        <div class="nav-logo-text">
-          <span>1st Terrington</span>
-          <span>Scout Group</span>
-        </div>
+        <div class="nav-logo-text"><span>1st Terrington</span><span>Scout Group</span></div>
       </a>
       <div class="nav-links">
         <button class="nav-link active" onclick="showPage('home')">Home</button>
@@ -557,10 +228,8 @@ footer {
   </div>
 </nav>
 
-<!-- ════════ HOME PAGE ════════ -->
+<!-- HOME -->
 <div id="page-home" class="page active">
-
-  <!-- HERO -->
   <section id="hero">
     <div class="container">
       <div class="hero-inner">
@@ -581,7 +250,7 @@ footer {
         <div class="hero-visual">
           <div class="hero-emblem">
             <div class="hero-emblem-inner">
-              <svg class="big-fleur" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="120" height="144" viewBox="0 0 100 120" fill="none">
                 <path d="M50 5 L60 35 L90 35 L67 54 L76 84 L50 65 L24 84 L33 54 L10 35 L40 35 Z" fill="#F0A500"/>
                 <path d="M50 40 C50 40 38 52 38 65 C38 72 43 78 50 78 C57 78 62 72 62 65 C62 52 50 40 50 40 Z" fill="white" opacity="0.9"/>
                 <circle cx="50" cy="62" r="7" fill="#5B3FA0"/>
@@ -595,721 +264,318 @@ footer {
       </div>
     </div>
   </section>
-
-  <!-- UPCOMING EVENTS PREVIEW -->
   <section class="section">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label">What's On</div>
-        <h2 class="section-title">Upcoming Events</h2>
-        <p>Exciting adventures and activities planned for all sections</p>
-      </div>
-      <div class="events-list">
-        <div class="event-card">
-          <div class="event-date"><div class="day">14</div><div class="month">Jun</div></div>
-          <div class="event-info">
-            <h3>District Camp — Castle Howard</h3>
-            <p>Annual district camping weekend at the stunning Castle Howard grounds. Bring your kit!</p>
-            <div class="event-meta"><span class="tag tag-scout">Scouts</span><span>📍 Castle Howard, York</span><span>🕐 Fri 6pm – Sun 2pm</span></div>
-          </div>
-          <button class="btn-secondary" onclick="showPage('events')">Details</button>
-        </div>
-        <div class="event-card">
-          <div class="event-date"><div class="day">21</div><div class="month">Jun</div></div>
-          <div class="event-info">
-            <h3>Beavers Nature Trail</h3>
-            <p>Exploring local woodland with ID sheets, bug hunting, and pond dipping activities.</p>
-            <div class="event-meta"><span class="tag tag-beaver">Beavers</span><span>📍 Terrington Woods</span><span>🕐 Sat 10am – 12pm</span></div>
-          </div>
-          <button class="btn-secondary" onclick="showPage('events')">Details</button>
-        </div>
-        <div class="event-card">
-          <div class="event-date"><div class="day">5</div><div class="month">Jul</div></div>
-          <div class="event-info">
-            <h3>Summer Fundraiser BBQ & Games Day</h3>
-            <p>Our biggest community fundraiser of the year — all welcome! Stalls, BBQ, and fun.</p>
-            <div class="event-meta"><span class="tag tag-all">All Sections</span><span>📍 Terrington Village Hall</span><span>🕐 Sat 12pm – 5pm</span></div>
-          </div>
-          <button class="btn-secondary" onclick="showPage('events')">Details</button>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:28px;">
-        <button class="btn-primary" onclick="showPage('events')">View All Events →</button>
-      </div>
+      <div class="section-header"><div class="section-label">What's On</div><h2 class="section-title">Upcoming Events</h2><p>Exciting adventures and activities planned for all sections</p></div>
+      <div id="home-events-list" class="events-list"><div class="loading">Loading events...</div></div>
+      <div style="text-align:center;margin-top:28px;"><button class="btn-primary" onclick="showPage('events')">View All Events →</button></div>
     </div>
   </section>
-
-  <!-- SECTIONS OVERVIEW -->
   <section class="section section-alt">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label">Our Sections</div>
-        <h2 class="section-title">Something for Every Age</h2>
-        <p>From Beavers to Explorers, we welcome young people at every stage of their adventure</p>
-      </div>
+      <div class="section-header"><div class="section-label">Our Sections</div><h2 class="section-title">Something for Every Age</h2><p>From Beavers to Explorers, we welcome young people at every stage of their adventure</p></div>
       <div class="groups-grid">
-        <div class="group-card beavers" onclick="showPage('sections')">
-          <div class="group-icon">🦫</div>
-          <h3>Beavers</h3>
-          <p>Our youngest adventurers learning, making friends and having fun</p>
-          <span class="group-age">Ages 5½–8</span>
-        </div>
-        <div class="group-card cubs" onclick="showPage('sections')">
-          <div class="group-icon">🐯</div>
-          <h3>Cubs</h3>
-          <p>Building teamwork, creativity and character through exciting challenges</p>
-          <span class="group-age">Ages 8–10½</span>
-        </div>
-        <div class="group-card scouts" onclick="showPage('sections')">
-          <div class="group-icon">⚜️</div>
-          <h3>Scouts</h3>
-          <p>Outdoor adventures, camping, and developing leadership skills</p>
-          <span class="group-age">Ages 10½–14</span>
-        </div>
-        <div class="group-card explorers" onclick="showPage('sections')">
-          <div class="group-icon">🧭</div>
-          <h3>Explorers</h3>
-          <p>Senior members taking on bigger challenges and leading the way</p>
-          <span class="group-age">Ages 14–18</span>
-        </div>
+        <div class="group-card beavers" onclick="showPage('sections')"><div class="group-icon">🦫</div><h3>Beavers</h3><p>Our youngest adventurers learning and having fun</p><span class="group-age">Ages 5½–8</span></div>
+        <div class="group-card cubs" onclick="showPage('sections')"><div class="group-icon">🐯</div><h3>Cubs</h3><p>Building teamwork and character through challenges</p><span class="group-age">Ages 8–10½</span></div>
+        <div class="group-card scouts" onclick="showPage('sections')"><div class="group-icon">⚜️</div><h3>Scouts</h3><p>Outdoor adventures and developing leadership skills</p><span class="group-age">Ages 10½–14</span></div>
+        <div class="group-card explorers" onclick="showPage('sections')"><div class="group-icon">🧭</div><h3>Explorers</h3><p>Senior members taking on bigger challenges</p><span class="group-age">Ages 14–18</span></div>
       </div>
     </div>
   </section>
-
-  <!-- LATEST NEWS -->
   <section class="section">
     <div class="container">
-      <div class="section-header">
-        <div class="section-label">Latest Updates</div>
-        <h2 class="section-title">News from the Group</h2>
-      </div>
-      <div class="news-grid">
-        <div class="news-card" onclick="showPage('news')">
-          <div class="news-img">🏕️</div>
-          <div class="news-body">
-            <span class="tag tag-scout">Scouts</span>
-            <h3>Scouts Earn Gold Navigation Badge After Epic Moors Challenge</h3>
-            <p>Six scouts completed the gruelling 15-mile moorland navigation challenge and all earned their Gold badge.</p>
-            <p class="date">3 June 2026</p>
-          </div>
-        </div>
-        <div class="news-card" onclick="showPage('news')">
-          <div class="news-img">🏆</div>
-          <div class="news-body">
-            <span class="tag tag-all">Group News</span>
-            <h3>1st Terrington Wins District Young Person of the Year Award</h3>
-            <p>We're thrilled to announce that Evie Marsden, aged 17, has been named District Young Person of the Year.</p>
-            <p class="date">28 May 2026</p>
-          </div>
-        </div>
-        <div class="news-card" onclick="showPage('news')">
-          <div class="news-img">🎨</div>
-          <div class="news-body">
-            <span class="tag tag-beaver">Beavers</span>
-            <h3>Beavers Complete Incredible Community Mural at Village Hall</h3>
-            <p>After six weeks of weekly sessions, our Beavers have unveiled a stunning wildlife mural at Terrington Village Hall.</p>
-            <p class="date">20 May 2026</p>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:28px;">
-        <button class="btn-primary" onclick="showPage('news')">All News →</button>
-      </div>
+      <div class="section-header"><div class="section-label">Latest Updates</div><h2 class="section-title">News from the Group</h2></div>
+      <div id="home-news-grid" class="news-grid"><div class="loading">Loading news...</div></div>
+      <div style="text-align:center;margin-top:28px;"><button class="btn-primary" onclick="showPage('news')">All News →</button></div>
     </div>
   </section>
-
 </div>
-<!-- END HOME -->
 
-<!-- ════════ SECTIONS PAGE ════════ -->
+<!-- SECTIONS -->
 <div id="page-sections" class="page">
   <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container">
-      <div class="section-label" style="color:var(--gold);">Our Sections</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Meet Our Sections</h1>
-      <p style="font-size:18px;color:rgba(255,255,255,0.8);">Four sections, one family — each with its own character and adventures</p>
-    </div>
+    <div class="container"><div class="section-label" style="color:var(--gold);">Our Sections</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Meet Our Sections</h1><p style="font-size:18px;color:rgba(255,255,255,0.8);">Four sections, one family</p></div>
   </div>
-  <div class="section">
-    <div class="container">
-      <!-- Beavers -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
-        <div>
-          <div class="section-label">Ages 5½–8</div>
-          <h2 class="section-title" style="display:flex;align-items:center;gap:12px;">🦫 Beavers</h2>
-          <p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Beavers is where the adventure begins! Our youngest members explore the outdoors, make crafts, play games, and make friends in a welcoming colony setting. Every session is a new discovery.</p>
-          <p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Mondays 5:30pm – 7:00pm<br><strong>Leader:</strong> Akela (Mrs. Sarah Thornton)<br><strong>Meeting Place:</strong> Terrington Village Hall</p>
-          <button class="btn-primary" onclick="showPage('join')">Join Beavers →</button>
-        </div>
-        <div style="background:linear-gradient(135deg,#FFF0E0,#FFE0C0);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🦫<br><br><p style="font-size:16px;color:#7A3800;font-weight:600;">Terrington Beaver Colony</p><p style="font-size:13px;color:#A06020;margin-top:6px;">Motto: "Beaver Scout bids our motto be, Fun, friendship, and sharing!"</p></div>
-      </div>
-      <!-- Cubs -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
-        <div style="background:linear-gradient(135deg,#FFF8E0,#FFF0B0);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🐯<br><br><p style="font-size:16px;color:#6B4A00;font-weight:600;">Terrington Cub Pack</p><p style="font-size:13px;color:#8B6020;margin-top:6px;">Motto: "Do Your Best"</p></div>
-        <div>
-          <div class="section-label">Ages 8–10½</div>
-          <h2 class="section-title">🐯 Cubs</h2>
-          <p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Cubs take on new challenges every week — from first aid and cooking, to camping trips and sports badges. It's all about teamwork, perseverance and having a great time.</p>
-          <p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Wednesdays 6:00pm – 7:30pm<br><strong>Leader:</strong> Baloo (Mr. James Whitfield)<br><strong>Meeting Place:</strong> Terrington Village Hall</p>
-          <button class="btn-primary" onclick="showPage('join')">Join Cubs →</button>
-        </div>
-      </div>
-      <!-- Scouts -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
-        <div>
-          <div class="section-label">Ages 10½–14</div>
-          <h2 class="section-title">⚜️ Scouts</h2>
-          <p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Real adventures await in Scouts. Camping, navigation, pioneering, cooking on open fires — our Troop gets out into the wild and challenges themselves every term. Duke of Edinburgh Award available.</p>
-          <p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Thursdays 6:30pm – 8:30pm<br><strong>Leader:</strong> Skip (Mr. David Hargreaves)<br><strong>Meeting Place:</strong> Scout HQ, Church Lane</p>
-          <button class="btn-primary" onclick="showPage('join')">Join Scouts →</button>
-        </div>
-        <div style="background:linear-gradient(135deg,var(--purple-pale),#D4C5F5);border-radius:20px;padding:40px;text-align:center;font-size:80px;">⚜️<br><br><p style="font-size:16px;color:var(--purple-deep);font-weight:600;">Terrington Scout Troop</p><p style="font-size:13px;color:var(--purple-mid);margin-top:6px;">Motto: "Be Prepared"</p></div>
-      </div>
-      <!-- Explorers -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
-        <div style="background:linear-gradient(135deg,#E0F5EE,#C0EAD8);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🧭<br><br><p style="font-size:16px;color:#0A5438;font-weight:600;">Terrington Explorer Unit</p><p style="font-size:13px;color:#1D7A5A;margin-top:6px;">Motto: "Challenge Yourself"</p></div>
-        <div>
-          <div class="section-label">Ages 14–18</div>
-          <h2 class="section-title">🧭 Explorers</h2>
-          <p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Explorers take the lead. International expeditions, community service projects, Gold Duke of Edinburgh, and leadership training. The senior section where our members truly come into their own.</p>
-          <p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Fridays 7:00pm – 9:30pm<br><strong>Leader:</strong> ESL (Ms. Rachel Booth)<br><strong>Meeting Place:</strong> Scout HQ, Church Lane</p>
-          <button class="btn-primary" onclick="showPage('join')">Join Explorers →</button>
-        </div>
-      </div>
+  <div class="section"><div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
+      <div><div class="section-label">Ages 5½–8</div><h2 class="section-title">🦫 Beavers</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Beavers is where the adventure begins! Exploring the outdoors, making crafts, playing games, and making friends.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Mondays 5:30–7:00pm<br><strong>Leader:</strong> Mrs. Sarah Thornton<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Beavers →</button></div>
+      <div style="background:linear-gradient(135deg,#FFF0E0,#FFE0C0);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🦫<br><br><p style="font-size:16px;color:#7A3800;font-weight:600;">Terrington Beaver Colony</p><p style="font-size:13px;color:#A06020;margin-top:6px;">Motto: "Fun, friendship, and sharing!"</p></div>
     </div>
-  </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
+      <div style="background:linear-gradient(135deg,#FFF8E0,#FFF0B0);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🐯<br><br><p style="font-size:16px;color:#6B4A00;font-weight:600;">Terrington Cub Pack</p><p style="font-size:13px;color:#8B6020;margin-top:6px;">Motto: "Do Your Best"</p></div>
+      <div><div class="section-label">Ages 8–10½</div><h2 class="section-title">🐯 Cubs</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">First aid, cooking, camping, sports badges. All about teamwork and having a great time.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Wednesdays 6:00–7:30pm<br><strong>Leader:</strong> Mr. James Whitfield<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Cubs →</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
+      <div><div class="section-label">Ages 10½–14</div><h2 class="section-title">⚜️ Scouts</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Camping, navigation, pioneering, cooking on open fires. Duke of Edinburgh Award available.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Thursdays 6:30–8:30pm<br><strong>Leader:</strong> Mr. David Hargreaves<br><strong>Where:</strong> Scout HQ, Church Lane</p><button class="btn-primary" onclick="showPage('join')">Join Scouts →</button></div>
+      <div style="background:linear-gradient(135deg,var(--purple-pale),#D4C5F5);border-radius:20px;padding:40px;text-align:center;font-size:80px;">⚜️<br><br><p style="font-size:16px;color:var(--purple-deep);font-weight:600;">Terrington Scout Troop</p><p style="font-size:13px;color:var(--purple-mid);margin-top:6px;">Motto: "Be Prepared"</p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
+      <div style="background:linear-gradient(135deg,#E0F5EE,#C0EAD8);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🧭<br><br><p style="font-size:16px;color:#0A5438;font-weight:600;">Terrington Explorer Unit</p><p style="font-size:13px;color:#1D7A5A;margin-top:6px;">Motto: "Challenge Yourself"</p></div>
+      <div><div class="section-label">Ages 14–18</div><h2 class="section-title">🧭 Explorers</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">International expeditions, community service, Gold Duke of Edinburgh, and leadership training.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Fridays 7:00–9:30pm<br><strong>Leader:</strong> Ms. Rachel Booth<br><strong>Where:</strong> Scout HQ, Church Lane</p><button class="btn-primary" onclick="showPage('join')">Join Explorers →</button></div>
+    </div>
+  </div></div>
 </div>
 
-<!-- ════════ EVENTS PAGE ════════ -->
+<!-- EVENTS -->
 <div id="page-events" class="page">
-  <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container">
-      <div class="section-label" style="color:var(--gold);">Calendar</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Events & Activities</h1>
-      <p style="font-size:18px;color:rgba(255,255,255,0.8);">What's happening across all sections at 1st Terrington</p>
+  <div style="background:var(--purple-deep);padding:60px 0 40px;"><div class="container"><div class="section-label" style="color:var(--gold);">Calendar</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Events &amp; Activities</h1></div></div>
+  <div class="section"><div class="container">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterEventsPage('all',this)">All Sections</button>
+      <button class="filter-btn" onclick="filterEventsPage('Beavers',this)">🦫 Beavers</button>
+      <button class="filter-btn" onclick="filterEventsPage('Cubs',this)">🐯 Cubs</button>
+      <button class="filter-btn" onclick="filterEventsPage('Scouts',this)">⚜ Scouts</button>
+      <button class="filter-btn" onclick="filterEventsPage('Explorers',this)">🧭 Explorers</button>
     </div>
-  </div>
-  <div class="section">
-    <div class="container">
-      <div class="filter-bar">
-        <button class="filter-btn active" onclick="filterEvents('all',this)">All Sections</button>
-        <button class="filter-btn" onclick="filterEvents('beaver',this)">🦫 Beavers</button>
-        <button class="filter-btn" onclick="filterEvents('cub',this)">🐯 Cubs</button>
-        <button class="filter-btn" onclick="filterEvents('scout',this)">⚜ Scouts</button>
-        <button class="filter-btn" onclick="filterEvents('explorer',this)">🧭 Explorers</button>
-      </div>
-      <div class="events-list" id="events-list">
-        <div class="event-card" data-section="scout">
-          <div class="event-date"><div class="day">14</div><div class="month">Jun</div></div>
-          <div class="event-info"><h3>District Camp — Castle Howard</h3><p>Annual district camping weekend at the stunning Castle Howard grounds. Full kit list will be emailed to parents. Spaces are limited — confirm attendance by 7th June.</p><div class="event-meta"><span class="tag tag-scout">Scouts</span><span>📍 Castle Howard, York</span><span>🕐 Fri 6pm – Sun 2pm</span></div></div>
-          <div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">£35/head</span><button class="btn-secondary">Info</button></div>
-        </div>
-        <div class="event-card" data-section="beaver">
-          <div class="event-date"><div class="day">21</div><div class="month">Jun</div></div>
-          <div class="event-info"><h3>Beavers Nature Trail</h3><p>Exploring local woodland with ID sheets, bug hunting, and pond dipping. Wear old clothes and wellies!</p><div class="event-meta"><span class="tag tag-beaver">Beavers</span><span>📍 Terrington Woods</span><span>🕐 Sat 10am – 12pm</span></div></div>
-          <div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Free</span><button class="btn-secondary">Info</button></div>
-        </div>
-        <div class="event-card" data-section="cub">
-          <div class="event-date"><div class="day">28</div><div class="month">Jun</div></div>
-          <div class="event-info"><h3>Cubs Cooking Badge Day</h3><p>Full day cooking challenge — each six will plan a menu, shop within a budget, and cook a two-course meal for judging.</p><div class="event-meta"><span class="tag tag-cub">Cubs</span><span>📍 Terrington Village Hall Kitchen</span><span>🕐 9am – 4pm</span></div></div>
-          <div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">£5</span><button class="btn-secondary">Info</button></div>
-        </div>
-        <div class="event-card" data-section="all">
-          <div class="event-date"><div class="day">5</div><div class="month">Jul</div></div>
-          <div class="event-info"><h3>Summer Fundraiser BBQ & Games Day</h3><p>Our biggest community fundraiser of the year — all welcome! Stalls, BBQ, tombola, and family fun. All proceeds go to the group equipment fund.</p><div class="event-meta"><span class="tag tag-all">All Sections</span><span>📍 Terrington Village Hall</span><span>🕐 Sat 12pm – 5pm</span></div></div>
-          <div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Free entry</span><button class="btn-secondary">Info</button></div>
-        </div>
-        <div class="event-card" data-section="explorer">
-          <div class="event-date"><div class="day">18</div><div class="month">Jul</div></div>
-          <div class="event-info"><h3>Explorers DofE Bronze Qualifying Expedition</h3><p>Two-day Bronze Duke of Edinburgh qualifying expedition in the North York Moors. Mandatory for all Bronze candidates.</p><div class="event-meta"><span class="tag tag-explorer">Explorers</span><span>📍 North York Moors</span><span>🕐 Fri 8am – Sat 5pm</span></div></div>
-          <div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">£20</span><button class="btn-secondary">Info</button></div>
-        </div>
-        <div class="event-card" data-section="scout">
-          <div class="event-date"><div class="day">26</div><div class="month">Jul</div></div>
-          <div class="event-info"><h3>Summer Camp — Dalby Forest</h3><p>Five-night summer camp in Dalby Forest with kayaking, mountain biking, climbing, and night hikes.</p><div class="event-meta"><span class="tag tag-scout">Scouts</span><span>📍 Dalby Forest, Pickering</span><span>🕐 Sat 26 Jul – Thu 31 Jul</span></div></div>
-          <div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">£120</span><button class="btn-secondary">Info</button></div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <div id="events-page-list" class="events-list"><div class="loading">Loading events...</div></div>
+  </div></div>
 </div>
 
-<!-- ════════ NEWS PAGE ════════ -->
+<!-- NEWS -->
 <div id="page-news" class="page">
-  <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container">
-      <div class="section-label" style="color:var(--gold);">Latest Updates</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Group News</h1>
-      <p style="font-size:18px;color:rgba(255,255,255,0.8);">Stories, achievements, and updates from across all sections</p>
-    </div>
-  </div>
-  <div class="section">
-    <div class="container">
-      <div class="news-grid">
-        <div class="news-card"><div class="news-img">🏕️</div><div class="news-body"><span class="tag tag-scout">Scouts</span><h3>Scouts Earn Gold Navigation Badge After Epic Moors Challenge</h3><p>Six scouts completed the gruelling 15-mile moorland navigation challenge and all earned their Gold badge. Leader David Hargreaves said "We've never been more proud of a group of young people."</p><p class="date">3 June 2026</p></div></div>
-        <div class="news-card"><div class="news-img">🏆</div><div class="news-body"><span class="tag tag-all">Group News</span><h3>1st Terrington Wins District Young Person of the Year Award</h3><p>We're thrilled to announce that Evie Marsden, aged 17, has been named District Young Person of the Year for her outstanding community service project.</p><p class="date">28 May 2026</p></div></div>
-        <div class="news-card"><div class="news-img">🎨</div><div class="news-body"><span class="tag tag-beaver">Beavers</span><h3>Beavers Complete Community Mural at Village Hall</h3><p>After six weeks of weekly sessions, our Beavers unveiled a stunning wildlife mural at Terrington Village Hall, depicting local plants, insects and birds.</p><p class="date">20 May 2026</p></div></div>
-        <div class="news-card"><div class="news-img">🌱</div><div class="news-body"><span class="tag tag-cub">Cubs</span><h3>Cubs Plant 200 Trees in Partnership with Forestry England</h3><p>Working with Forestry England, our Cubs spent a Saturday morning in Dalby Forest planting 200 native broadleaf trees as part of their Environment badge.</p><p class="date">12 May 2026</p></div></div>
-        <div class="news-card"><div class="news-img">🌍</div><div class="news-body"><span class="tag tag-explorer">Explorers</span><h3>Explorers Return from Life-Changing Community Project in Uganda</h3><p>Eight of our Explorers returned last week from a two-week volunteering project in Uganda, helping to build a school library in rural Jinja district.</p><p class="date">5 May 2026</p></div></div>
-        <div class="news-card"><div class="news-img">🎉</div><div class="news-body"><span class="tag tag-all">Group News</span><h3>New Scout HQ Officially Opened by District Commissioner</h3><p>After 18 months of fundraising and building work, our brand-new Scout HQ on Church Lane was officially opened by District Commissioner Helen Forrester.</p><p class="date">26 April 2026</p></div></div>
-      </div>
-    </div>
-  </div>
+  <div style="background:var(--purple-deep);padding:60px 0 40px;"><div class="container"><div class="section-label" style="color:var(--gold);">Latest Updates</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Group News</h1></div></div>
+  <div class="section"><div class="container"><div id="news-page-grid" class="news-grid"><div class="loading">Loading news...</div></div></div></div>
 </div>
 
-<!-- ════════ GALLERY PAGE ════════ -->
+<!-- GALLERY -->
 <div id="page-gallery" class="page">
-  <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container">
-      <div class="section-label" style="color:var(--gold);">Photo Gallery</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Our Adventures in Pictures</h1>
-      <p style="font-size:18px;color:rgba(255,255,255,0.8);">Moments from camps, activities, and community events</p>
-    </div>
-  </div>
-  <div class="section">
-    <div class="container">
-      <div class="filter-bar" style="margin-bottom:28px;">
-        <button class="filter-btn active">All</button>
-        <button class="filter-btn">Beavers</button>
-        <button class="filter-btn">Cubs</button>
-        <button class="filter-btn">Scouts</button>
-        <button class="filter-btn">Explorers</button>
-        <button class="filter-btn">Camps</button>
-        <button class="filter-btn">Awards</button>
-      </div>
-      <div class="gallery-grid">
-        <div class="gallery-item wide gallery-bg-1"><div class="overlay"><p style="font-size:22px;margin-bottom:8px;">🏕️</p>District Camp 2025 — Castle Howard</div></div>
-        <div class="gallery-item gallery-bg-2"><div class="overlay">🧭 Navigator Training</div></div>
-        <div class="gallery-item tall gallery-bg-3"><div class="overlay">🔥 Fire Lighting Badge</div></div>
-        <div class="gallery-item gallery-bg-4"><div class="overlay">🌿 Nature Trail Beavers</div></div>
-        <div class="gallery-item gallery-bg-5"><div class="overlay">🏆 District Awards 2026</div></div>
-        <div class="gallery-item gallery-bg-6"><div class="overlay">🎨 Craft & Art Cubs</div></div>
-        <div class="gallery-item wide gallery-bg-7"><div class="overlay"><p style="font-size:22px;margin-bottom:8px;">🌍</p>Uganda Community Project 2026 — Explorers</div></div>
-        <div class="gallery-item gallery-bg-8"><div class="overlay">🧗 Climbing Wall Day</div></div>
-        <div class="gallery-item gallery-bg-1"><div class="overlay">🌲 Dalby Forest Camp</div></div>
-        <div class="gallery-item gallery-bg-3"><div class="overlay">🍳 Cub Cooking Day</div></div>
-      </div>
-      <p style="text-align:center;margin-top:24px;font-size:14px;color:var(--text-muted);">Photos managed by section leaders via the Admin Area.</p>
-    </div>
-  </div>
+  <div style="background:var(--purple-deep);padding:60px 0 40px;"><div class="container"><div class="section-label" style="color:var(--gold);">Photo Gallery</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Our Adventures in Pictures</h1></div></div>
+  <div class="section"><div class="container"><div id="gallery-page-grid" class="gallery-grid"><div class="loading" style="grid-column:span 4;">Loading gallery...</div></div></div></div>
 </div>
 
-<!-- ════════ FUNDRAISING PAGE ════════ -->
+<!-- FUNDRAISING -->
 <div id="page-fundraising" class="page">
-  <div class="section">
-    <div class="container">
-      <div class="fundraising-hero">
-        <div class="section-label" style="color:var(--gold-light);">Help Us Grow</div>
-        <h2>New Equipment Fund 2026</h2>
-        <p>We're raising funds for new camping equipment, kayaks, and activity kit for all sections</p>
-        <div style="display:flex;justify-content:space-between;font-size:14px;opacity:0.9;margin-bottom:8px;">
-          <span>£6,800 raised</span><span>Goal: £10,000</span>
-        </div>
-        <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
-        <p class="progress-label">68% of our goal — thank you to all donors! 🎉</p>
-        <div style="margin-top:28px;">
-          <button class="btn-gold">Donate Now →</button>
-        </div>
-      </div>
-      <div class="fundraise-cards">
-        <div class="fundraise-card">
-          <div class="f-icon">💝</div>
-          <h3>One-Off Donation</h3>
-          <p>Make a single donation of any amount to support our equipment fund, activity grants, or general group running costs.</p>
-          <button class="btn-primary">Donate Now</button>
-        </div>
-        <div class="fundraise-card">
-          <div class="f-icon">📅</div>
-          <h3>Monthly Giving</h3>
-          <p>Set up a small monthly donation via standing order or GoCardless. Even £5 a month makes a real difference over the year.</p>
-          <button class="btn-primary">Set Up Giving</button>
-        </div>
-        <div class="fundraise-card">
-          <div class="f-icon">🛒</div>
-          <h3>Shop & Give</h3>
-          <p>Use Amazon Smile, EasyFundraising, or Asda Cashpot for Schools when you shop online to raise money at no extra cost to you.</p>
-          <button class="btn-primary">Find Out How</button>
-        </div>
-      </div>
-      <div style="margin-top:48px;background:var(--purple-ultra);border-radius:16px;padding:36px;">
-        <h3 style="font-family:'Playfair Display',serif;font-size:26px;color:var(--purple-deep);margin-bottom:16px;">Upcoming Fundraising Events</h3>
-        <div class="events-list">
-          <div class="event-card">
-            <div class="event-date"><div class="day">5</div><div class="month">Jul</div></div>
-            <div class="event-info"><h3>Summer BBQ & Games Day</h3><p>Community fun day at Terrington Village Hall — all proceeds to the equipment fund.</p><div class="event-meta"><span>📍 Terrington Village Hall</span><span>🎯 Target: £1,500</span></div></div>
-            <button class="btn-secondary">Details</button>
-          </div>
-          <div class="event-card">
-            <div class="event-date"><div class="day">4</div><div class="month">Oct</div></div>
-            <div class="event-info"><h3>Sponsored Hike — North York Moors</h3><p>20-mile sponsored hike across the moors. Get your sponsorship forms from any section leader.</p><div class="event-meta"><span>📍 North York Moors</span><span>🎯 Target: £2,000</span></div></div>
-            <button class="btn-secondary">Details</button>
-          </div>
-        </div>
-      </div>
+  <div class="section"><div class="container">
+    <div class="fundraising-hero">
+      <div class="section-label" style="color:var(--gold-light);">Help Us Grow</div>
+      <h2>New Equipment Fund 2026</h2>
+      <p>We're raising funds for new camping equipment, kayaks, and activity kit</p>
+      <div style="display:flex;justify-content:space-between;font-size:14px;opacity:0.9;margin-bottom:8px;"><span>£6,800 raised</span><span>Goal: £10,000</span></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+      <p style="font-size:14px;opacity:0.85;">68% of our goal — thank you! 🎉</p>
+      <div style="margin-top:28px;"><button class="btn-gold">Donate Now →</button></div>
     </div>
-  </div>
+    <div class="fundraise-cards">
+      <div class="fundraise-card"><div style="font-size:40px;margin-bottom:14px;">💝</div><h3>One-Off Donation</h3><p>Make a single donation of any amount to support our equipment fund.</p><button class="btn-primary">Donate Now</button></div>
+      <div class="fundraise-card"><div style="font-size:40px;margin-bottom:14px;">📅</div><h3>Monthly Giving</h3><p>Set up a small monthly donation. Even £5 a month makes a real difference.</p><button class="btn-primary">Set Up Giving</button></div>
+      <div class="fundraise-card"><div style="font-size:40px;margin-bottom:14px;">🛒</div><h3>Shop &amp; Give</h3><p>Use EasyFundraising when you shop online to raise money at no extra cost.</p><button class="btn-primary">Find Out How</button></div>
+    </div>
+  </div></div>
 </div>
 
-<!-- ════════ DOWNLOADS PAGE ════════ -->
+<!-- DOWNLOADS -->
 <div id="page-downloads" class="page">
-  <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container">
-      <div class="section-label" style="color:var(--gold);">Resources</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Downloads</h1>
-      <p style="font-size:18px;color:rgba(255,255,255,0.8);">Forms, handbooks, permission slips and activity resources</p>
-    </div>
-  </div>
-  <div class="section">
-    <div class="container">
-      <div style="margin-bottom:36px;">
-        <h3 style="font-size:20px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">📋 Permission & Consent Forms</h3>
-        <div class="downloads-grid">
-          <div class="download-item"><div class="dl-icon">📄</div><div class="dl-info"><h4>Annual Permission Form 2026–27</h4><p>PDF • Updated June 2026</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🏕️</div><div class="dl-info"><h4>Residential Camp Permission Slip</h4><p>PDF • For overnight camps</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🏥</div><div class="dl-info"><h4>Medical & Dietary Information Form</h4><p>PDF • Required for all members</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">📸</div><div class="dl-info"><h4>Photo / Media Consent Form</h4><p>PDF • GDPR compliant</p></div><button class="dl-btn">↓ Download</button></div>
-        </div>
-      </div>
-      <div style="margin-bottom:36px;">
-        <h3 style="font-size:20px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">📚 Programme & Activity Resources</h3>
-        <div class="downloads-grid">
-          <div class="download-item"><div class="dl-icon">🦫</div><div class="dl-info"><h4>Beaver Programme Overview</h4><p>PDF • 2026 term plan</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🐯</div><div class="dl-info"><h4>Cub Programme Overview</h4><p>PDF • 2026 term plan</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">⚜️</div><div class="dl-info"><h4>Scout Programme Overview</h4><p>PDF • 2026 term plan</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🧭</div><div class="dl-info"><h4>Explorer Programme Overview</h4><p>PDF • 2026 term plan</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🏔️</div><div class="dl-info"><h4>Duke of Edinburgh Guide</h4><p>PDF • Bronze, Silver & Gold info</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">💰</div><div class="dl-info"><h4>Fundraising Sponsorship Form</h4><p>PDF • For the sponsored hike</p></div><button class="dl-btn">↓ Download</button></div>
+  <div style="background:var(--purple-deep);padding:60px 0 40px;"><div class="container"><div class="section-label" style="color:var(--gold);">Resources</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Downloads</h1></div></div>
+  <div class="section"><div class="container"><div id="downloads-page-list"><div class="loading">Loading documents...</div></div></div></div>
+</div>
+
+<!-- JOIN -->
+<div id="page-join" class="page">
+  <div style="background:var(--purple-deep);padding:60px 0 40px;"><div class="container"><div class="section-label" style="color:var(--gold);">New Members</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Join 1st Terrington</h1></div></div>
+  <div class="section"><div class="container">
+    <div class="join-layout">
+      <div class="join-info">
+        <h2>Why Join Scouts?</h2>
+        <p>Scouting gives young people skills for life — confidence, resilience, teamwork, and a love of the outdoors. We've been doing this in Terrington since 1923.</p>
+        <div class="join-perk"><div style="font-size:20px;margin-top:2px;">🏕️</div><p>Regular camping trips and outdoor adventures across North Yorkshire</p></div>
+        <div class="join-perk"><div style="font-size:20px;margin-top:2px;">🏅</div><p>Over 200 activity badges including Duke of Edinburgh</p></div>
+        <div class="join-perk"><div style="font-size:20px;margin-top:2px;">👫</div><p>A welcoming, inclusive community with lifelong friendships</p></div>
+        <div class="join-perk"><div style="font-size:20px;margin-top:2px;">🌍</div><p>Opportunities to volunteer and serve your local community</p></div>
+        <div style="margin-top:28px;padding:20px;background:var(--purple-pale);border-radius:12px;">
+          <p style="font-weight:600;color:var(--purple-deep);margin-bottom:6px;">Questions?</p>
+          <p style="font-size:14px;color:var(--text-muted);">Call <strong>01653 648200</strong> or email <strong>join@1stterringtonscouts.org.uk</strong></p>
         </div>
       </div>
       <div>
-        <h3 style="font-size:20px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">ℹ️ Group Information</h3>
-        <div class="downloads-grid">
-          <div class="download-item"><div class="dl-icon">📖</div><div class="dl-info"><h4>Parent Handbook 2026</h4><p>PDF • What to expect, uniform, fees</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🛡️</div><div class="dl-info"><h4>Safeguarding Policy</h4><p>PDF • Our commitment to young people</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">🔒</div><div class="dl-info"><h4>GDPR Privacy Notice</h4><p>PDF • How we handle your data</p></div><button class="dl-btn">↓ Download</button></div>
-          <div class="download-item"><div class="dl-icon">💳</div><div class="dl-info"><h4>Subscription Fees Schedule</h4><p>PDF • 2026–27 termly subs</p></div><button class="dl-btn">↓ Download</button></div>
+        <div class="form-card" id="join-form-card">
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--purple-deep);margin-bottom:6px;">Registration Form</h3>
+          <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">We'll be in touch within 48 hours</p>
+          <div class="form-row">
+            <div class="form-group"><label>Child's First Name *</label><input type="text" id="j-firstname" placeholder="e.g. Alfie"></div>
+            <div class="form-group"><label>Child's Surname *</label><input type="text" id="j-surname" placeholder="e.g. Thompson"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Date of Birth *</label><input type="date" id="j-dob"></div>
+            <div class="form-group"><label>Section *</label><select id="j-section"><option value="">Select...</option><option>Beavers (5½–8)</option><option>Cubs (8–10½)</option><option>Scouts (10½–14)</option><option>Explorers (14–18)</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Parent/Guardian Name *</label><input type="text" id="j-parent" placeholder="Full name"></div>
+            <div class="form-group"><label>Relationship *</label><select id="j-rel"><option>Parent</option><option>Guardian</option><option>Carer</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Email Address *</label><input type="email" id="j-email" placeholder="your@email.com"></div>
+            <div class="form-group"><label>Phone Number *</label><input type="tel" id="j-phone" placeholder="07xxx xxxxxx"></div>
+          </div>
+          <div class="form-group"><label>Address *</label><input type="text" id="j-address" placeholder="12 High Street, Terrington, YO60 6PR"></div>
+          <div class="form-group"><label>Additional information</label><textarea id="j-notes" placeholder="Medical conditions, dietary requirements, questions..."></textarea></div>
+          <div class="form-group" style="margin-bottom:24px;">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-weight:400;color:var(--text-mid);">
+              <input type="checkbox" id="j-consent" style="width:auto;margin-top:2px;"> I agree to the Privacy Notice and consent to my child's details being held by 1st Terrington Scout Group
+            </label>
+          </div>
+          <button class="btn-primary" style="width:100%;justify-content:center;" onclick="submitJoinForm()">Submit Registration →</button>
+        </div>
+        <div id="join-success" style="display:none;text-align:center;padding:60px 40px;">
+          <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+          <h3 style="font-size:22px;font-weight:700;color:var(--purple-deep);margin-bottom:8px;">Registration Received!</h3>
+          <p style="color:var(--text-muted);">Thanks for registering. We'll be in touch within 48 hours. Welcome to the adventure!</p>
         </div>
       </div>
     </div>
-  </div>
+  </div></div>
 </div>
 
-<!-- ════════ JOIN PAGE ════════ -->
-<div id="page-join" class="page">
-  <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container">
-      <div class="section-label" style="color:var(--gold);">New Members</div>
-      <h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Join 1st Terrington</h1>
-      <p style="font-size:18px;color:rgba(255,255,255,0.8);">Start your adventure — registration takes just a few minutes</p>
-    </div>
-  </div>
-  <div class="section">
-    <div class="container">
-      <div class="join-layout">
-        <div class="join-info">
-          <h2>Why Join Scouts?</h2>
-          <p>Scouting gives young people skills for life — confidence, resilience, teamwork, and a love of the outdoors. We've been doing this in Terrington since 1923.</p>
-          <div class="join-perk"><div class="join-perk-icon">🏕️</div><p>Regular camping trips and outdoor adventures across North Yorkshire and beyond</p></div>
-          <div class="join-perk"><div class="join-perk-icon">🏅</div><p>Over 200 activity badges to earn across all sections, including Duke of Edinburgh</p></div>
-          <div class="join-perk"><div class="join-perk-icon">👫</div><p>A welcoming, inclusive community with lifelong friendships</p></div>
-          <div class="join-perk"><div class="join-perk-icon">🌍</div><p>Opportunities to volunteer and serve your local community</p></div>
-          <div class="join-perk"><div class="join-perk-icon">💰</div><p>Subsidised subscription fees — no young person turned away for financial reasons</p></div>
-          <div style="margin-top:28px;padding:20px;background:var(--purple-pale);border-radius:12px;">
-            <p style="font-weight:600;color:var(--purple-deep);margin-bottom:6px;">Questions before you join?</p>
-            <p style="font-size:14px;color:var(--text-muted);">Call Sarah on <strong>01653 648200</strong> or email <strong>join@1stterringtonscouts.org.uk</strong></p>
-          </div>
-        </div>
-        <div>
-          <div class="form-card" id="join-form-card">
-            <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--purple-deep);margin-bottom:6px;">Registration Form</h3>
-            <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Fill in your child's details and we'll be in touch within 48 hours</p>
-            <div class="form-row">
-              <div class="form-group"><label>Child's First Name *</label><input type="text" placeholder="e.g. Alfie"></div>
-              <div class="form-group"><label>Child's Surname *</label><input type="text" placeholder="e.g. Thompson"></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Date of Birth *</label><input type="date"></div>
-              <div class="form-group"><label>Section Interested In *</label><select><option value="">Select...</option><option>Beavers (5½–8)</option><option>Cubs (8–10½)</option><option>Scouts (10½–14)</option><option>Explorers (14–18)</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Parent/Guardian Name *</label><input type="text" placeholder="Full name"></div>
-              <div class="form-group"><label>Relationship to Child *</label><select><option>Parent</option><option>Guardian</option><option>Carer</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>Email Address *</label><input type="email" placeholder="your@email.com"></div>
-              <div class="form-group"><label>Phone Number *</label><input type="tel" placeholder="07xxx xxxxxx"></div>
-            </div>
-            <div class="form-group"><label>Address (First line & postcode) *</label><input type="text" placeholder="12 High Street, Terrington, YO60 6PR"></div>
-            <div class="form-group"><label>Any additional information or questions?</label><textarea placeholder="Medical conditions, dietary requirements, any questions for us..."></textarea></div>
-            <div class="form-group" style="margin-bottom:24px;">
-              <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-weight:400;color:var(--text-mid);">
-                <input type="checkbox" style="width:auto;margin-top:2px;"> I agree to the <strong>Privacy Notice</strong> and consent to my child's details being held by 1st Terrington Scout Group
-              </label>
-            </div>
-            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="submitJoinForm()">Submit Registration →</button>
-          </div>
-          <div class="form-success" id="join-success">
-            <div class="icon">🎉</div>
-            <h3>Registration Received!</h3>
-            <p>Thanks for registering your interest. We'll be in touch within 48 hours to arrange a taster session. Welcome to the adventure!</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ ADMIN LOGIN OVERLAY ════════ -->
+<!-- ADMIN LOGIN -->
 <div class="admin-overlay" id="admin-overlay">
   <div class="admin-modal">
     <h2>Leader Login</h2>
     <p>Sign in to access the section management dashboard</p>
-    <div class="login-error" id="login-error">Incorrect username or password. Please try again.</div>
-    <div class="form-group"><label>Username</label><input type="text" id="login-user" placeholder="your.name" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-error" id="login-error">Incorrect email or password. Please try again.</div>
+    <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div style="display:flex;gap:12px;margin-top:8px;">
       <button class="btn-primary" style="flex:1;justify-content:center;" onclick="doLogin()">Login →</button>
       <button class="btn-secondary" onclick="closeAdminLogin()">Cancel</button>
     </div>
-    <p style="font-size:12px;color:var(--text-muted);margin-top:16px;text-align:center;">Demo credentials — username: <strong>admin</strong> / password: <strong>scouts1923</strong></p>
   </div>
 </div>
 
-<!-- ════════ ADMIN PANEL ════════ -->
+<!-- ADMIN PANEL -->
 <div id="page-admin" class="page">
   <div class="admin-panel">
     <div class="admin-topbar">
       <strong>⚜ 1st Terrington Scouts — Admin</strong>
-      <span id="admin-user-label">Logged in as: Section Leader</span>
+      <span id="admin-user-label">Section Leader</span>
       <button class="admin-logout" onclick="adminLogout()">Logout</button>
     </div>
     <div class="admin-layout">
       <div class="admin-sidebar">
-        <button class="admin-nav-item active" onclick="showAdminSection('dashboard',this)"><span class="icon">📊</span> Dashboard</button>
-        <button class="admin-nav-item" onclick="showAdminSection('events-admin',this)"><span class="icon">📅</span> Events</button>
-        <button class="admin-nav-item" onclick="showAdminSection('news-admin',this)"><span class="icon">📰</span> News</button>
-        <button class="admin-nav-item" onclick="showAdminSection('gallery-admin',this)"><span class="icon">🖼️</span> Gallery</button>
-        <button class="admin-nav-item" onclick="showAdminSection('members-admin',this)"><span class="icon">👥</span> Members</button>
-        <button class="admin-nav-item" onclick="showAdminSection('downloads-admin',this)"><span class="icon">📁</span> Downloads</button>
-        <button class="admin-nav-item" onclick="showAdminSection('fundraising-admin',this)"><span class="icon">💰</span> Fundraising</button>
-        <button class="admin-nav-item" onclick="showAdminSection('joins-admin',this)"><span class="icon">📋</span> Join Requests</button>
-        <button class="admin-nav-item" onclick="showAdminSection('settings-admin',this)"><span class="icon">⚙️</span> Settings</button>
+        <button class="admin-nav-item active" onclick="showAdminSection('dashboard',this)"><span>📊</span> Dashboard</button>
+        <button class="admin-nav-item" onclick="showAdminSection('events-admin',this)"><span>📅</span> Events</button>
+        <button class="admin-nav-item" onclick="showAdminSection('news-admin',this)"><span>📰</span> News</button>
+        <button class="admin-nav-item" onclick="showAdminSection('gallery-admin',this)"><span>🖼️</span> Gallery</button>
+        <button class="admin-nav-item" onclick="showAdminSection('members-admin',this)"><span>👥</span> Members</button>
+        <button class="admin-nav-item" onclick="showAdminSection('downloads-admin',this)"><span>📁</span> Downloads</button>
+        <button class="admin-nav-item" onclick="showAdminSection('fundraising-admin',this)"><span>💰</span> Fundraising</button>
+        <button class="admin-nav-item" onclick="showAdminSection('joins-admin',this)"><span>📋</span> Join Requests</button>
       </div>
       <div class="admin-main">
 
-        <!-- DASHBOARD -->
         <div class="admin-section active" id="admin-dashboard">
-          <div class="admin-header"><h2>Dashboard</h2><span style="font-size:14px;color:var(--text-muted);">Welcome back! Here's what's happening.</span></div>
+          <div class="admin-header"><h2>Dashboard</h2></div>
           <div class="admin-stats">
-            <div class="admin-stat"><div class="num">127</div><div class="lbl">Total Members</div></div>
-            <div class="admin-stat"><div class="num">6</div><div class="lbl">Events This Month</div></div>
-            <div class="admin-stat"><div class="num">3</div><div class="lbl">New Join Requests</div></div>
-            <div class="admin-stat"><div class="num">£6,800</div><div class="lbl">Raised This Year</div></div>
+            <div class="admin-stat"><div class="num" id="stat-members">—</div><div class="lbl">Total Members</div></div>
+            <div class="admin-stat"><div class="num" id="stat-events">—</div><div class="lbl">Events</div></div>
+            <div class="admin-stat"><div class="num" id="stat-joins">—</div><div class="lbl">Pending Join Requests</div></div>
+            <div class="admin-stat"><div class="num" id="stat-news">—</div><div class="lbl">News Articles</div></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
-              <h4 style="font-weight:600;color:var(--purple-deep);margin-bottom:14px;">📋 Recent Join Requests</h4>
-              <div style="font-size:14px;color:var(--text-mid);">
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Oliver Hughes — Beavers</span><span class="tag" style="background:#FFF3DC;color:#7A5500;">Pending</span></div>
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Lily Bennett — Cubs</span><span class="tag" style="background:#FFF3DC;color:#7A5500;">Pending</span></div>
-                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>Jack Morrison — Scouts</span><span class="tag" style="background:#E0F5EE;color:#0A5438;">Accepted</span></div>
-              </div>
-              <button class="btn-secondary" style="margin-top:14px;font-size:13px;padding:8px 16px;" onclick="showAdminSection('joins-admin',null)">View All →</button>
-            </div>
-            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
-              <h4 style="font-weight:600;color:var(--purple-deep);margin-bottom:14px;">📅 Upcoming Events</h4>
-              <div style="font-size:14px;color:var(--text-mid);">
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>District Camp</span><span style="color:var(--text-muted);">14 Jun</span></div>
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>Nature Trail</span><span style="color:var(--text-muted);">21 Jun</span></div>
-                <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>BBQ Fundraiser</span><span style="color:var(--text-muted);">5 Jul</span></div>
-              </div>
-              <button class="btn-secondary" style="margin-top:14px;font-size:13px;padding:8px 16px;" onclick="showAdminSection('events-admin',null)">Manage Events →</button>
-            </div>
+          <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <h4 style="font-weight:600;color:var(--purple-deep);margin-bottom:14px;">📋 Recent Join Requests</h4>
+            <div id="dashboard-joins"><div class="loading">Loading...</div></div>
           </div>
         </div>
 
-        <!-- EVENTS ADMIN -->
         <div class="admin-section" id="admin-events-admin">
-          <div class="admin-header"><h2>Events</h2><button class="btn-primary" onclick="toggleAddForm('add-event-form')">+ Add Event</button></div>
+          <div class="admin-header"><h2>Events</h2><button class="btn-primary" onclick="toggleForm('add-event-form')">+ Add Event</button></div>
           <div class="add-form hidden" id="add-event-form">
             <h3>Add New Event</h3>
             <div class="add-form-grid">
-              <div class="form-group"><label>Event Title</label><input type="text" placeholder="Event name"></div>
-              <div class="form-group"><label>Date</label><input type="date"></div>
-              <div class="form-group"><label>Section</label><select><option>All Sections</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
-              <div class="form-group"><label>Location</label><input type="text" placeholder="Venue name"></div>
-              <div class="form-group"><label>Time</label><input type="text" placeholder="e.g. 6pm – 8pm"></div>
-              <div class="form-group"><label>Cost</label><input type="text" placeholder="e.g. £10 or Free"></div>
+              <div class="form-group"><label>Title</label><input type="text" id="ev-title" placeholder="Event name"></div>
+              <div class="form-group"><label>Day</label><input type="text" id="ev-day" placeholder="e.g. 14"></div>
+              <div class="form-group"><label>Month</label><input type="text" id="ev-month" placeholder="e.g. Jun"></div>
+              <div class="form-group"><label>Section</label><select id="ev-section"><option>All Sections</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Location</label><input type="text" id="ev-location" placeholder="Venue"></div>
+              <div class="form-group"><label>Time</label><input type="text" id="ev-time" placeholder="e.g. 6pm–8pm"></div>
+              <div class="form-group"><label>Cost</label><input type="text" id="ev-cost" placeholder="e.g. £10 or Free"></div>
+              <div class="form-group" style="grid-column:span 2"><label>Description</label><input type="text" id="ev-desc" placeholder="Event details"></div>
             </div>
-            <div class="form-group"><label>Description</label><textarea placeholder="Event details..."></textarea></div>
-            <div style="display:flex;gap:12px;margin-top:8px;">
-              <button class="btn-primary" onclick="addEventRow()">Save Event</button>
-              <button class="btn-secondary" onclick="toggleAddForm('add-event-form')">Cancel</button>
-            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveEvent()">Save Event</button><button class="btn-secondary" onclick="toggleForm('add-event-form')">Cancel</button></div>
           </div>
-          <div class="admin-table-wrap">
-            <table class="admin-table" id="events-table">
-              <thead><tr><th>Date</th><th>Event</th><th>Section</th><th>Location</th><th>Cost</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr><td>14 Jun 2026</td><td>District Camp — Castle Howard</td><td><span class="tag tag-scout">Scouts</span></td><td>Castle Howard</td><td>£35</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>21 Jun 2026</td><td>Beavers Nature Trail</td><td><span class="tag tag-beaver">Beavers</span></td><td>Terrington Woods</td><td>Free</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>28 Jun 2026</td><td>Cubs Cooking Badge Day</td><td><span class="tag tag-cub">Cubs</span></td><td>Village Hall</td><td>£5</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>5 Jul 2026</td><td>Summer Fundraiser BBQ</td><td><span class="tag tag-all">All</span></td><td>Village Hall</td><td>Free</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Event</th><th>Section</th><th>Location</th><th>Cost</th><th>Actions</th></tr></thead><tbody id="events-admin-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
-        <!-- NEWS ADMIN -->
         <div class="admin-section" id="admin-news-admin">
-          <div class="admin-header"><h2>News Articles</h2><button class="btn-primary" onclick="toggleAddForm('add-news-form')">+ Add Article</button></div>
+          <div class="admin-header"><h2>News Articles</h2><button class="btn-primary" onclick="toggleForm('add-news-form')">+ Add Article</button></div>
           <div class="add-form hidden" id="add-news-form">
             <h3>Write News Article</h3>
             <div class="add-form-grid">
-              <div class="form-group" style="grid-column:span 2"><label>Headline</label><input type="text" placeholder="Article headline"></div>
-              <div class="form-group"><label>Section Tag</label><select><option>Group News</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group" style="grid-column:span 2"><label>Headline</label><input type="text" id="nw-title" placeholder="Article headline"></div>
+              <div class="form-group"><label>Section Tag</label><select id="nw-section"><option>Group News</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Emoji</label><input type="text" id="nw-emoji" placeholder="e.g. 🏕️" style="font-size:20px;"></div>
+              <div class="form-group"><label>Date</label><input type="text" id="nw-date" placeholder="e.g. 9 June 2026"></div>
             </div>
-            <div class="form-group"><label>Article Body</label><textarea placeholder="Write the full article here..." style="min-height:120px;"></textarea></div>
-            <div style="display:flex;gap:12px;margin-top:8px;">
-              <button class="btn-primary" onclick="showNotif('Article published!')">Publish Article</button>
-              <button class="btn-secondary" onclick="toggleAddForm('add-news-form')">Cancel</button>
-            </div>
+            <div class="form-group"><label>Article Body</label><textarea id="nw-body" placeholder="Write the article here..." style="min-height:120px;"></textarea></div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveNews()">Publish Article</button><button class="btn-secondary" onclick="toggleForm('add-news-form')">Cancel</button></div>
           </div>
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead><tr><th>Date</th><th>Headline</th><th>Section</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr><td>3 Jun 2026</td><td>Scouts Earn Gold Navigation Badge</td><td><span class="tag tag-scout">Scouts</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>28 May 2026</td><td>District Young Person of the Year Award</td><td><span class="tag tag-all">Group</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>20 May 2026</td><td>Beavers Complete Community Mural</td><td><span class="tag tag-beaver">Beavers</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Headline</th><th>Section</th><th>Actions</th></tr></thead><tbody id="news-admin-tbody"><tr><td colspan="4" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
-        <!-- GALLERY ADMIN -->
         <div class="admin-section" id="admin-gallery-admin">
-          <div class="admin-header"><h2>Gallery</h2><button class="btn-primary">+ Upload Photos</button></div>
-          <div style="background:white;border:2px dashed var(--border);border-radius:12px;padding:48px;text-align:center;margin-bottom:24px;">
-            <div style="font-size:48px;margin-bottom:12px;">🖼️</div>
-            <p style="font-weight:600;color:var(--purple-deep);margin-bottom:6px;">Drop photos here to upload</p>
-            <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">PNG, JPG up to 10MB each</p>
-            <button class="btn-secondary">Browse Files</button>
+          <div class="admin-header"><h2>Gallery</h2><button class="btn-primary" onclick="toggleForm('add-gallery-form')">+ Add Photo</button></div>
+          <div class="add-form hidden" id="add-gallery-form">
+            <h3>Add Gallery Item</h3>
+            <div class="add-form-grid">
+              <div class="form-group"><label>Title</label><input type="text" id="gl-title" placeholder="Photo title"></div>
+              <div class="form-group"><label>Section</label><select id="gl-section"><option>All</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Emoji</label><input type="text" id="gl-emoji" placeholder="e.g. 🏕️"></div>
+              <div class="form-group"><label>Date</label><input type="text" id="gl-date" placeholder="e.g. Jun 2026"></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveGallery()">Add to Gallery</button><button class="btn-secondary" onclick="toggleForm('add-gallery-form')">Cancel</button></div>
           </div>
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead><tr><th>Preview</th><th>Title</th><th>Section</th><th>Date Added</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr><td style="font-size:24px;">🏕️</td><td>District Camp 2025</td><td><span class="tag tag-scout">Scouts</span></td><td>Jun 2025</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td style="font-size:24px;">🎨</td><td>Beaver Mural Day</td><td><span class="tag tag-beaver">Beavers</span></td><td>May 2026</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td style="font-size:24px;">🌍</td><td>Uganda Trip 2026</td><td><span class="tag tag-explorer">Explorers</span></td><td>May 2026</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Emoji</th><th>Title</th><th>Section</th><th>Date</th><th>Actions</th></tr></thead><tbody id="gallery-admin-tbody"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
-        <!-- MEMBERS ADMIN -->
         <div class="admin-section" id="admin-members-admin">
-          <div class="admin-header"><h2>Members</h2>
-            <div style="display:flex;gap:10px;">
-              <select style="padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;" onchange="filterMembers(this.value)"><option value="all">All Sections</option><option value="Beavers">Beavers</option><option value="Cubs">Cubs</option><option value="Scouts">Scouts</option><option value="Explorers">Explorers</option></select>
-              <button class="btn-primary">+ Add Member</button>
+          <div class="admin-header"><h2>Members</h2><button class="btn-primary" onclick="toggleForm('add-member-form')">+ Add Member</button></div>
+          <div class="add-form hidden" id="add-member-form">
+            <h3>Add Member</h3>
+            <div class="add-form-grid">
+              <div class="form-group"><label>Child Name</label><input type="text" id="mb-name" placeholder="Full name"></div>
+              <div class="form-group"><label>Section</label><select id="mb-section"><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Age</label><input type="text" id="mb-age" placeholder="Age"></div>
+              <div class="form-group"><label>Parent Name</label><input type="text" id="mb-parent" placeholder="Parent/Guardian"></div>
+              <div class="form-group"><label>Phone</label><input type="text" id="mb-phone" placeholder="Phone number"></div>
+              <div class="form-group"><label>Email</label><input type="email" id="mb-email" placeholder="Email"></div>
             </div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveMember()">Save Member</button><button class="btn-secondary" onclick="toggleForm('add-member-form')">Cancel</button></div>
           </div>
-          <div class="admin-table-wrap">
-            <table class="admin-table" id="members-table">
-              <thead><tr><th>Name</th><th>Section</th><th>Age</th><th>Parent</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr data-section="Beavers"><td>Alfie Thompson</td><td><span class="tag tag-beaver">Beavers</span></td><td>7</td><td>Sarah Thompson</td><td>07700 900123</td><td><span class="tag" style="background:#E0F5EE;color:#0A5438;">Active</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr data-section="Cubs"><td>Emma Whitfield</td><td><span class="tag tag-cub">Cubs</span></td><td>9</td><td>James Whitfield</td><td>07700 900456</td><td><span class="tag" style="background:#E0F5EE;color:#0A5438;">Active</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr data-section="Scouts"><td>Noah Hargreaves</td><td><span class="tag tag-scout">Scouts</span></td><td>12</td><td>David Hargreaves</td><td>07700 900789</td><td><span class="tag" style="background:#E0F5EE;color:#0A5438;">Active</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr data-section="Explorers"><td>Evie Marsden</td><td><span class="tag tag-explorer">Explorers</span></td><td>17</td><td>Claire Marsden</td><td>07700 900321</td><td><span class="tag" style="background:#E0F5EE;color:#0A5438;">Active</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr data-section="Scouts"><td>Lucas Bennett</td><td><span class="tag tag-scout">Scouts</span></td><td>11</td><td>Tom Bennett</td><td>07700 900654</td><td><span class="tag" style="background:#FFF3DC;color:#7A5500;">Waitlist</span></td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Section</th><th>Age</th><th>Parent</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead><tbody id="members-admin-tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
-        <!-- DOWNLOADS ADMIN -->
         <div class="admin-section" id="admin-downloads-admin">
-          <div class="admin-header"><h2>Downloads</h2><button class="btn-primary">+ Upload Document</button></div>
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead><tr><th>Document</th><th>Category</th><th>File Type</th><th>Date Added</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr><td>Annual Permission Form 2026–27</td><td>Consent Forms</td><td>PDF</td><td>1 Jun 2026</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>Medical & Dietary Form</td><td>Consent Forms</td><td>PDF</td><td>1 Jun 2026</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>Scout Programme Overview 2026</td><td>Programme</td><td>PDF</td><td>10 May 2026</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>Parent Handbook 2026</td><td>Information</td><td>PDF</td><td>5 Apr 2026</td><td><button class="action-btn edit">Edit</button><button class="action-btn delete" onclick="deleteRow(this)">Delete</button></td></tr>
-              </tbody>
-            </table>
+          <div class="admin-header"><h2>Downloads</h2><button class="btn-primary" onclick="toggleForm('add-download-form')">+ Add Document</button></div>
+          <div class="add-form hidden" id="add-download-form">
+            <h3>Add Document</h3>
+            <div class="add-form-grid">
+              <div class="form-group" style="grid-column:span 2"><label>Document Title</label><input type="text" id="dl-title" placeholder="Document name"></div>
+              <div class="form-group"><label>Category</label><select id="dl-cat"><option>Consent Forms</option><option>Programme</option><option>Information</option><option>Fundraising</option></select></div>
+              <div class="form-group"><label>File Type</label><input type="text" id="dl-type" placeholder="e.g. PDF"></div>
+              <div class="form-group"><label>Date Added</label><input type="text" id="dl-date" placeholder="e.g. June 2026"></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveDownload()">Add Document</button><button class="btn-secondary" onclick="toggleForm('add-download-form')">Cancel</button></div>
           </div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Title</th><th>Category</th><th>Type</th><th>Date</th><th>Actions</th></tr></thead><tbody id="downloads-admin-tbody"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
-        <!-- FUNDRAISING ADMIN -->
         <div class="admin-section" id="admin-fundraising-admin">
-          <div class="admin-header"><h2>Fundraising</h2><button class="btn-primary" onclick="showNotif('Donation link copied!')">Copy Donation Link</button></div>
-          <div class="admin-stats" style="grid-template-columns:repeat(3,1fr);">
-            <div class="admin-stat"><div class="num">£6,800</div><div class="lbl">Total Raised 2026</div></div>
-            <div class="admin-stat"><div class="num">£3,200</div><div class="lbl">Still Needed</div></div>
-            <div class="admin-stat"><div class="num">68%</div><div class="lbl">Of £10,000 Goal</div></div>
+          <div class="admin-header"><h2>Fundraising</h2><button class="btn-primary" onclick="toggleForm('add-fundraising-form')">+ Add Donation</button></div>
+          <div class="add-form hidden" id="add-fundraising-form">
+            <h3>Record Donation</h3>
+            <div class="add-form-grid">
+              <div class="form-group"><label>Date</label><input type="text" id="fr-date" placeholder="e.g. 9 Jun 2026"></div>
+              <div class="form-group"><label>Donor / Source</label><input type="text" id="fr-donor" placeholder="Name or source"></div>
+              <div class="form-group"><label>Amount</label><input type="text" id="fr-amount" placeholder="e.g. £50"></div>
+              <div class="form-group"><label>Method</label><select id="fr-method"><option>Online</option><option>Bank Transfer</option><option>Cash</option><option>Cheque</option></select></div>
+              <div class="form-group" style="grid-column:span 2"><label>Notes</label><input type="text" id="fr-notes" placeholder="Any notes"></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveFundraising()">Save Donation</button><button class="btn-secondary" onclick="toggleForm('add-fundraising-form')">Cancel</button></div>
           </div>
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead><tr><th>Date</th><th>Donor / Source</th><th>Amount</th><th>Method</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>5 Jun 2026</td><td>Anonymous</td><td style="font-weight:600;color:#0A5438;">£250</td><td>Online</td><td>Equipment fund</td></tr>
-                <tr><td>3 Jun 2026</td><td>Henderson Family</td><td style="font-weight:600;color:#0A5438;">£50</td><td>Bank Transfer</td><td>Monthly standing order</td></tr>
-                <tr><td>28 May 2026</td><td>Terrington Village Fête</td><td style="font-weight:600;color:#0A5438;">£890</td><td>Cash</td><td>Stall proceeds</td></tr>
-                <tr><td>15 May 2026</td><td>Local Business Grant</td><td style="font-weight:600;color:#0A5438;">£2,000</td><td>Cheque</td><td>Whitfield & Sons Ltd</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Donor</th><th>Amount</th><th>Method</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="fundraising-admin-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
-        <!-- JOIN REQUESTS ADMIN -->
         <div class="admin-section" id="admin-joins-admin">
-          <div class="admin-header"><h2>Join Requests</h2><span style="font-size:14px;background:#FFF3DC;color:#7A5500;padding:4px 12px;border-radius:20px;font-weight:600;">3 pending</span></div>
-          <div class="admin-table-wrap">
-            <table class="admin-table">
-              <thead><tr><th>Child Name</th><th>Section</th><th>Age</th><th>Parent</th><th>Contact</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr><td>Oliver Hughes</td><td><span class="tag tag-beaver">Beavers</span></td><td>6</td><td>Mark Hughes</td><td>07700 911001</td><td>8 Jun 2026</td><td><span class="tag" style="background:#FFF3DC;color:#7A5500;">Pending</span></td><td><button class="action-btn edit" onclick="showNotif('Request accepted! Email sent.')">Accept</button><button class="action-btn delete" onclick="deleteRow(this)">Decline</button></td></tr>
-                <tr><td>Lily Bennett</td><td><span class="tag tag-cub">Cubs</span></td><td>9</td><td>Claire Bennett</td><td>07700 911002</td><td>7 Jun 2026</td><td><span class="tag" style="background:#FFF3DC;color:#7A5500;">Pending</span></td><td><button class="action-btn edit" onclick="showNotif('Request accepted! Email sent.')">Accept</button><button class="action-btn delete" onclick="deleteRow(this)">Decline</button></td></tr>
-                <tr><td>Jack Morrison</td><td><span class="tag tag-scout">Scouts</span></td><td>11</td><td>Helen Morrison</td><td>07700 911003</td><td>5 Jun 2026</td><td><span class="tag" style="background:#E0F5EE;color:#0A5438;">Accepted</span></td><td><button class="action-btn edit">View</button><button class="action-btn delete" onclick="deleteRow(this)">Archive</button></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- SETTINGS ADMIN -->
-        <div class="admin-section" id="admin-settings-admin">
-          <div class="admin-header"><h2>Settings</h2></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
-              <h4 style="font-weight:600;color:var(--purple-deep);margin-bottom:16px;">Group Details</h4>
-              <div class="form-group"><label>Group Name</label><input type="text" value="1st Terrington Scout Group"></div>
-              <div class="form-group"><label>Address</label><input type="text" value="Church Lane, Terrington, YO60 6PR"></div>
-              <div class="form-group"><label>Phone</label><input type="tel" value="01653 648200"></div>
-              <div class="form-group"><label>Email</label><input type="email" value="info@1stterringtonscouts.org.uk"></div>
-              <button class="btn-primary" onclick="showNotif('Settings saved!')">Save Changes</button>
-            </div>
-            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
-              <h4 style="font-weight:600;color:var(--purple-deep);margin-bottom:16px;">Leader Accounts</h4>
-              <div class="admin-table-wrap">
-                <table class="admin-table">
-                  <thead><tr><th>Name</th><th>Role</th><th>Section</th></tr></thead>
-                  <tbody>
-                    <tr><td>Sarah Thornton</td><td>Beaver Leader</td><td>Beavers</td></tr>
-                    <tr><td>James Whitfield</td><td>Cub Leader</td><td>Cubs</td></tr>
-                    <tr><td>David Hargreaves</td><td>Scout Leader</td><td>Scouts</td></tr>
-                    <tr><td>Rachel Booth</td><td>Explorer Leader</td><td>Explorers</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <button class="btn-secondary" style="margin-top:14px;" onclick="showNotif('Invite email sent!')">+ Invite Leader</button>
-            </div>
-          </div>
+          <div class="admin-header"><h2>Join Requests</h2></div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Child</th><th>Section</th><th>Parent</th><th>Email</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="joins-admin-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
       </div>
@@ -1317,7 +583,6 @@ footer {
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer id="main-footer">
   <div class="container">
     <div class="footer-grid">
@@ -1328,150 +593,271 @@ footer {
           </div>
           <div><div style="font-weight:700;font-size:15px;">1st Terrington Scout Group</div><div style="font-size:12px;opacity:0.6;">Est. 1923 · North Yorkshire</div></div>
         </div>
-        <p>A proud member of the World Organisation of the Scout Movement. Registered Charity No. 1234567. Serving young people in Terrington and the surrounding villages since 1923.</p>
+        <p>Registered Charity No. 1234567. Serving young people in Terrington and surrounding villages since 1923.</p>
       </div>
-      <div class="footer-col">
-        <h4>Navigate</h4>
-        <a href="#" onclick="showPage('sections');return false;">Our Sections</a>
-        <a href="#" onclick="showPage('events');return false;">Events</a>
-        <a href="#" onclick="showPage('news');return false;">News</a>
-        <a href="#" onclick="showPage('gallery');return false;">Gallery</a>
-        <a href="#" onclick="showPage('fundraising');return false;">Fundraising</a>
-        <a href="#" onclick="showPage('downloads');return false;">Downloads</a>
-      </div>
-      <div class="footer-col">
-        <h4>Sections</h4>
-        <a href="#" onclick="showPage('sections');return false;">🦫 Beavers (5½–8)</a>
-        <a href="#" onclick="showPage('sections');return false;">🐯 Cubs (8–10½)</a>
-        <a href="#" onclick="showPage('sections');return false;">⚜ Scouts (10½–14)</a>
-        <a href="#" onclick="showPage('sections');return false;">🧭 Explorers (14–18)</a>
-        <a href="#" onclick="showPage('join');return false;">Join Us</a>
-      </div>
-      <div class="footer-col">
-        <h4>Contact</h4>
-        <a href="tel:01653648200">📞 01653 648200</a>
-        <a href="mailto:info@1stterringtonscouts.org.uk">✉ Email Us</a>
-        <a href="#">📍 Church Lane, Terrington</a>
-        <a href="#">🌐 Scouts.org.uk</a>
-        <a href="#" onclick="openAdminLogin();return false;">⚙ Leader Login</a>
-      </div>
+      <div class="footer-col"><h4>Navigate</h4><a onclick="showPage('sections')">Our Sections</a><a onclick="showPage('events')">Events</a><a onclick="showPage('news')">News</a><a onclick="showPage('gallery')">Gallery</a><a onclick="showPage('fundraising')">Fundraising</a><a onclick="showPage('downloads')">Downloads</a></div>
+      <div class="footer-col"><h4>Sections</h4><a onclick="showPage('sections')">🦫 Beavers (5½–8)</a><a onclick="showPage('sections')">🐯 Cubs (8–10½)</a><a onclick="showPage('sections')">⚜ Scouts (10½–14)</a><a onclick="showPage('sections')">🧭 Explorers (14–18)</a><a onclick="showPage('join')">Join Us</a></div>
+      <div class="footer-col"><h4>Contact</h4><a>📞 01653 648200</a><a>✉ info@1stterringtonscouts.org.uk</a><a>📍 Church Lane, Terrington</a><a onclick="openAdminLogin()">⚙ Leader Login</a></div>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 1st Terrington Scout Group. All rights reserved.</span>
-      <span>Be Prepared · Be Kind · Be Ready for Adventure</span>
-    </div>
+    <div class="footer-bottom"><span>© 2026 1st Terrington Scout Group.</span><span>Be Prepared · Be Kind · Be Ready for Adventure</span></div>
   </div>
 </footer>
 
-<!-- NOTIFICATION TOAST -->
 <div class="notif" id="notif"></div>
 
 <script>
-// ── PAGE NAVIGATION ──
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  const map = {home:'Home',sections:'Sections',events:'Events',news:'News',gallery:'Gallery',fundraising:'Fundraising',downloads:'Downloads',join:'Join Us'};
-  document.querySelectorAll('.nav-link').forEach(l => { if(l.textContent.trim() === (map[page]||'')) l.classList.add('active'); });
-  const footer = document.getElementById('main-footer');
-  if(page === 'admin') { footer.style.display='none'; } else { footer.style.display=''; window.scrollTo(0,0); }
+const SUPABASE_URL = 'https://gcmlvnqsffcgvzxcorwz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjbWx2bnFzZmZjZ3Z6eGNvcnd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMjczNzUsImV4cCI6MjA5NjYwMzM3NX0.T1U_mTL5u_DGDaYunO8lBu01D5Zea-QKWbt4md0FttQ';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+let allEvents = [];
+const galleryBgs = ['linear-gradient(135deg,#C4A8F0,#9B77E0)','linear-gradient(135deg,#A8D4F0,#77AEE0)','linear-gradient(135deg,#F0C4A8,#E09B77)','linear-gradient(135deg,#A8F0C4,#77E0AE)','linear-gradient(135deg,#F0A8C4,#E07799)','linear-gradient(135deg,#C4F0A8,#99E077)'];
+
+function showNotif(msg){const n=document.getElementById('notif');n.textContent=msg;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),3000);}
+function toggleForm(id){document.getElementById(id).classList.toggle('hidden');}
+function tagClass(s){const m={'Beavers':'tag-beaver','Cubs':'tag-cub','Scouts':'tag-scout','Explorers':'tag-explorer','All Sections':'tag-all','Group News':'tag-all','All':'tag-all'};return m[s]||'tag-all';}
+
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  const labels={home:'Home',sections:'Sections',events:'Events',news:'News',gallery:'Gallery',fundraising:'Fundraising',downloads:'Downloads',join:'Join Us'};
+  document.querySelectorAll('.nav-link').forEach(l=>{if(l.textContent.trim()===(labels[page]||''))l.classList.add('active');});
+  document.getElementById('main-footer').style.display=page==='admin'?'none':'';
+  if(page!=='admin')window.scrollTo(0,0);
+  if(page==='events')loadEventsPage();
+  if(page==='news')loadNewsPage();
+  if(page==='gallery')loadGalleryPage();
+  if(page==='downloads')loadDownloadsPage();
 }
 
-// ── ADMIN LOGIN ──
-function openAdminLogin() { document.getElementById('admin-overlay').classList.add('show'); document.getElementById('login-user').focus(); }
-function closeAdminLogin() { document.getElementById('admin-overlay').classList.remove('show'); document.getElementById('login-error').style.display='none'; }
-function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
-  if((u==='admin'||u==='sarah.thornton'||u==='james.whitfield'||u==='david.hargreaves'||u==='rachel.booth') && p==='scouts1923') {
-    closeAdminLogin();
-    document.getElementById('admin-user-label').textContent = 'Logged in as: ' + (u==='admin'?'Group Admin':u.split('.').map(n=>n[0].toUpperCase()+n.slice(1)).join(' '));
-    showPage('admin');
-    showNotif('Welcome back! Login successful ✓');
-  } else {
-    document.getElementById('login-error').style.display='block';
-  }
-}
-function adminLogout() { showPage('home'); showNotif('Logged out successfully'); }
+function openAdminLogin(){document.getElementById('admin-overlay').classList.add('show');document.getElementById('login-email').focus();}
+function closeAdminLogin(){document.getElementById('admin-overlay').classList.remove('show');document.getElementById('login-error').style.display='none';}
 
-// ── ADMIN SECTIONS ──
-function showAdminSection(id, el) {
-  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('admin-' + id).classList.add('active');
-  document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
-  if(el) el.classList.add('active');
-  else { document.querySelectorAll('.admin-nav-item').forEach(n => { if(n.textContent.trim().toLowerCase().includes(id.replace('-admin','').toLowerCase())) n.classList.add('active'); }); }
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  document.getElementById('login-error').style.display='none';
+  const {data,error}=await db.auth.signInWithPassword({email,password:pass});
+  if(error){document.getElementById('login-error').style.display='block';return;}
+  currentUser=data.user;
+  document.getElementById('admin-user-label').textContent='Logged in as: '+currentUser.email;
+  closeAdminLogin();
+  showPage('admin');
+  loadAllAdmin();
+  showNotif('Welcome back! ✓');
 }
 
-// ── EVENTS FILTER ──
-function filterEvents(section, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+async function adminLogout(){await db.auth.signOut();currentUser=null;showPage('home');showNotif('Logged out successfully');}
+
+function showAdminSection(id,el){
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('admin-'+id).classList.add('active');
+  document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+
+function loadAllAdmin(){loadAdminDashboard();loadAdminEvents();loadAdminNews();loadAdminGallery();loadAdminMembers();loadAdminDownloads();loadAdminFundraising();loadAdminJoins();}
+
+function eventCardHTML(e){return`<div class="event-card"><div class="event-date"><div class="day">${e.date||'—'}</div><div class="month">${e.month||''}</div></div><div class="event-info"><h3>${e.title}</h3><p>${e.description||''}</p><div class="event-meta"><span class="tag ${tagClass(e.section)}">${e.section||'All'}</span><span>📍 ${e.location||''}</span><span>🕐 ${e.time||''}</span></div></div><div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">${e.cost||''}</span></div></div>`;}
+
+async function loadHomeEvents(){
+  const{data}=await db.from('events').select('*').order('created_at',{ascending:true}).limit(3);
+  const el=document.getElementById('home-events-list');
+  if(!data||data.length===0){el.innerHTML='<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📅</div><p>No events yet — check back soon!</p></div>';return;}
+  el.innerHTML=data.map(e=>eventCardHTML(e)).join('');
+}
+
+async function loadEventsPage(){
+  const{data}=await db.from('events').select('*').order('created_at',{ascending:true});
+  allEvents=data||[];renderEventsPage(allEvents);
+}
+
+function renderEventsPage(events){
+  const el=document.getElementById('events-page-list');
+  if(!events||events.length===0){el.innerHTML='<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📅</div><p>No events yet — check back soon!</p></div>';return;}
+  el.innerHTML=events.map(e=>eventCardHTML(e)).join('');
+}
+
+function filterEventsPage(section,btn){
+  document.querySelectorAll('#page-events .filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  document.querySelectorAll('#events-list .event-card').forEach(card => {
-    if(section === 'all' || card.dataset.section === section || card.dataset.section === 'all') {
-      card.style.display = '';
-    } else {
-      card.style.display = 'none';
-    }
-  });
+  const filtered=section==='all'?allEvents:allEvents.filter(e=>e.section===section||e.section==='All Sections');
+  renderEventsPage(filtered);
 }
 
-// ── MEMBERS FILTER ──
-function filterMembers(section) {
-  document.querySelectorAll('#members-table tbody tr').forEach(row => {
-    row.style.display = (section === 'all' || row.dataset.section === section) ? '' : 'none';
-  });
+function newsCardHTML(n){return`<div class="news-card"><div class="news-img">${n.emoji||'📰'}</div><div class="news-body"><span class="tag ${tagClass(n.section)}">${n.section||'Group News'}</span><h3>${n.title}</h3><p>${(n.body||'').substring(0,120)}${n.body&&n.body.length>120?'...':''}</p><p class="date">${n.date||''}</p></div></div>`;}
+
+async function loadHomeNews(){
+  const{data}=await db.from('news').select('*').order('created_at',{ascending:false}).limit(3);
+  const el=document.getElementById('home-news-grid');
+  if(!data||data.length===0){el.innerHTML='<div class="empty-state" style="grid-column:span 3"><div style="font-size:40px;margin-bottom:12px;">📰</div><p>No news yet — check back soon!</p></div>';return;}
+  el.innerHTML=data.map(n=>newsCardHTML(n)).join('');
 }
 
-// ── JOIN FORM ──
-function submitJoinForm() {
-  document.getElementById('join-form-card').style.display = 'none';
-  document.getElementById('join-success').style.display = 'block';
+async function loadNewsPage(){
+  const{data}=await db.from('news').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('news-page-grid');
+  if(!data||data.length===0){el.innerHTML='<div class="empty-state" style="grid-column:span 3"><div style="font-size:40px;margin-bottom:12px;">📰</div><p>No news yet</p></div>';return;}
+  el.innerHTML=data.map(n=>newsCardHTML(n)).join('');
+}
+
+async function loadGalleryPage(){
+  const{data}=await db.from('gallery').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('gallery-page-grid');
+  if(!data||data.length===0){el.innerHTML='<div class="empty-state" style="grid-column:span 4"><div style="font-size:40px;margin-bottom:12px;">🖼️</div><p>No photos yet</p></div>';return;}
+  el.innerHTML=data.map((g,i)=>`<div class="gallery-item ${i%5===0?'wide':''}" style="background:${galleryBgs[i%galleryBgs.length]}">${g.emoji||'📸'}<div class="overlay">${g.title}</div></div>`).join('');
+}
+
+async function loadDownloadsPage(){
+  const{data}=await db.from('downloads').select('*').order('created_at',{ascending:false});
+  const el=document.getElementById('downloads-page-list');
+  if(!data||data.length===0){el.innerHTML='<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📁</div><p>No documents yet</p></div>';return;}
+  const cats=[...new Set(data.map(d=>d.category))];
+  el.innerHTML=cats.map(cat=>`<div style="margin-bottom:36px;"><h3 style="font-size:20px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">📋 ${cat}</h3><div class="downloads-grid">${data.filter(d=>d.category===cat).map(d=>`<div class="download-item"><div class="dl-icon">📄</div><div class="dl-info"><h4>${d.title}</h4><p>${d.file_type||'PDF'} • ${d.date_added||''}</p></div><button class="dl-btn">↓ Download</button></div>`).join('')}</div></div>`).join('');
+}
+
+async function loadAdminDashboard(){
+  const[members,events,joins,news]=await Promise.all([
+    db.from('members').select('id',{count:'exact',head:true}),
+    db.from('events').select('id',{count:'exact',head:true}),
+    db.from('join_requests').select('id',{count:'exact',head:true}).eq('status','Pending'),
+    db.from('news').select('id',{count:'exact',head:true})
+  ]);
+  document.getElementById('stat-members').textContent=members.count||0;
+  document.getElementById('stat-events').textContent=events.count||0;
+  document.getElementById('stat-joins').textContent=joins.count||0;
+  document.getElementById('stat-news').textContent=news.count||0;
+  const{data:recentJoins}=await db.from('join_requests').select('*').order('created_at',{ascending:false}).limit(3);
+  const dj=document.getElementById('dashboard-joins');
+  if(!recentJoins||recentJoins.length===0){dj.innerHTML='<p style="color:var(--text-muted);font-size:14px;">No join requests yet</p>';return;}
+  dj.innerHTML=recentJoins.map(j=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;"><span>${j.child_name} — ${j.section}</span><span class="tag" style="background:${j.status==='Pending'?'#FFF3DC':'#E0F5EE'};color:${j.status==='Pending'?'#7A5500':'#0A5438'};">${j.status}</span></div>`).join('');
+}
+
+async function loadAdminEvents(){
+  const{data}=await db.from('events').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('events-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted);">No events yet</td></tr>';return;}
+  tb.innerHTML=data.map(e=>`<tr><td>${e.date||''} ${e.month||''}</td><td>${e.title}</td><td><span class="tag ${tagClass(e.section)}">${e.section}</span></td><td>${e.location||''}</td><td>${e.cost||''}</td><td><button class="action-btn delete" onclick="deleteRecord('events','${e.id}',this)">Delete</button></td></tr>`).join('');
+}
+
+async function saveEvent(){
+  const rec={title:document.getElementById('ev-title').value,date:document.getElementById('ev-day').value,month:document.getElementById('ev-month').value,section:document.getElementById('ev-section').value,location:document.getElementById('ev-location').value,time:document.getElementById('ev-time').value,cost:document.getElementById('ev-cost').value,description:document.getElementById('ev-desc').value};
+  if(!rec.title){showNotif('Please enter a title');return;}
+  const{error}=await db.from('events').insert([rec]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Event saved! ✓');toggleForm('add-event-form');loadAdminEvents();loadHomeEvents();
+}
+
+async function loadAdminNews(){
+  const{data}=await db.from('news').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('news-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted);">No articles yet</td></tr>';return;}
+  tb.innerHTML=data.map(n=>`<tr><td>${n.date||''}</td><td>${n.title}</td><td><span class="tag ${tagClass(n.section)}">${n.section}</span></td><td><button class="action-btn delete" onclick="deleteRecord('news','${n.id}',this)">Delete</button></td></tr>`).join('');
+}
+
+async function saveNews(){
+  const rec={title:document.getElementById('nw-title').value,section:document.getElementById('nw-section').value,emoji:document.getElementById('nw-emoji').value,date:document.getElementById('nw-date').value,body:document.getElementById('nw-body').value};
+  if(!rec.title){showNotif('Please enter a headline');return;}
+  const{error}=await db.from('news').insert([rec]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Article published! ✓');toggleForm('add-news-form');loadAdminNews();loadHomeNews();
+}
+
+async function loadAdminGallery(){
+  const{data}=await db.from('gallery').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('gallery-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">No gallery items yet</td></tr>';return;}
+  tb.innerHTML=data.map(g=>`<tr><td style="font-size:24px;">${g.emoji||'📸'}</td><td>${g.title}</td><td><span class="tag ${tagClass(g.section)}">${g.section}</span></td><td>${g.date_added||''}</td><td><button class="action-btn delete" onclick="deleteRecord('gallery','${g.id}',this)">Delete</button></td></tr>`).join('');
+}
+
+async function saveGallery(){
+  const rec={title:document.getElementById('gl-title').value,section:document.getElementById('gl-section').value,emoji:document.getElementById('gl-emoji').value,date_added:document.getElementById('gl-date').value};
+  if(!rec.title){showNotif('Please enter a title');return;}
+  const{error}=await db.from('gallery').insert([rec]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Photo added! ✓');toggleForm('add-gallery-form');loadAdminGallery();
+}
+
+async function loadAdminMembers(){
+  const{data}=await db.from('members').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('members-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted);">No members yet</td></tr>';return;}
+  tb.innerHTML=data.map(m=>`<tr><td>${m.child_name}</td><td><span class="tag ${tagClass(m.section)}">${m.section}</span></td><td>${m.age||''}</td><td>${m.parent_name||''}</td><td>${m.phone||''}</td><td><span class="tag" style="background:${m.status==='Active'?'#E0F5EE':'#FFF3DC'};color:${m.status==='Active'?'#0A5438':'#7A5500'};">${m.status}</span></td><td><button class="action-btn delete" onclick="deleteRecord('members','${m.id}',this)">Delete</button></td></tr>`).join('');
+}
+
+async function saveMember(){
+  const rec={child_name:document.getElementById('mb-name').value,section:document.getElementById('mb-section').value,age:document.getElementById('mb-age').value,parent_name:document.getElementById('mb-parent').value,phone:document.getElementById('mb-phone').value,email:document.getElementById('mb-email').value,status:'Active'};
+  if(!rec.child_name){showNotif('Please enter a name');return;}
+  const{error}=await db.from('members').insert([rec]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Member added! ✓');toggleForm('add-member-form');loadAdminMembers();loadAdminDashboard();
+}
+
+async function loadAdminDownloads(){
+  const{data}=await db.from('downloads').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('downloads-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">No documents yet</td></tr>';return;}
+  tb.innerHTML=data.map(d=>`<tr><td>${d.title}</td><td>${d.category||''}</td><td>${d.file_type||''}</td><td>${d.date_added||''}</td><td><button class="action-btn delete" onclick="deleteRecord('downloads','${d.id}',this)">Delete</button></td></tr>`).join('');
+}
+
+async function saveDownload(){
+  const rec={title:document.getElementById('dl-title').value,category:document.getElementById('dl-cat').value,file_type:document.getElementById('dl-type').value,date_added:document.getElementById('dl-date').value};
+  if(!rec.title){showNotif('Please enter a title');return;}
+  const{error}=await db.from('downloads').insert([rec]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Document added! ✓');toggleForm('add-download-form');loadAdminDownloads();
+}
+
+async function loadAdminFundraising(){
+  const{data}=await db.from('fundraising').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('fundraising-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted);">No donations yet</td></tr>';return;}
+  tb.innerHTML=data.map(f=>`<tr><td>${f.date||''}</td><td>${f.donor||''}</td><td style="font-weight:600;color:#0A5438;">${f.amount||''}</td><td>${f.method||''}</td><td>${f.notes||''}</td><td><button class="action-btn delete" onclick="deleteRecord('fundraising','${f.id}',this)">Delete</button></td></tr>`).join('');
+}
+
+async function saveFundraising(){
+  const rec={date:document.getElementById('fr-date').value,donor:document.getElementById('fr-donor').value,amount:document.getElementById('fr-amount').value,method:document.getElementById('fr-method').value,notes:document.getElementById('fr-notes').value};
+  if(!rec.donor){showNotif('Please enter a donor name');return;}
+  const{error}=await db.from('fundraising').insert([rec]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Donation recorded! ✓');toggleForm('add-fundraising-form');loadAdminFundraising();
+}
+
+async function loadAdminJoins(){
+  const{data}=await db.from('join_requests').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('joins-admin-tbody');
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted);">No join requests yet</td></tr>';return;}
+  tb.innerHTML=data.map(j=>`<tr><td>${j.child_name||''}</td><td><span class="tag ${tagClass(j.section)}">${j.section||''}</span></td><td>${j.parent_name||''}</td><td>${j.email||''}</td><td>${j.phone||''}</td><td style="font-size:12px;">${j.created_at?new Date(j.created_at).toLocaleDateString('en-GB'):''}</td><td><span class="tag" style="background:${j.status==='Pending'?'#FFF3DC':'#E0F5EE'};color:${j.status==='Pending'?'#7A5500':'#0A5438'};">${j.status}</span></td><td><button class="action-btn edit" onclick="updateJoinStatus('${j.id}','Accepted',this)">Accept</button><button class="action-btn delete" onclick="deleteRecord('join_requests','${j.id}',this)">Decline</button></td></tr>`).join('');
+}
+
+async function updateJoinStatus(id,status,btn){
+  const{error}=await db.from('join_requests').update({status}).eq('id',id);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Request '+status+'! ✓');loadAdminJoins();loadAdminDashboard();
+}
+
+async function submitJoinForm(){
+  if(!document.getElementById('j-consent').checked){showNotif('Please tick the consent box');return;}
+  const firstname=document.getElementById('j-firstname').value;
+  const surname=document.getElementById('j-surname').value;
+  if(!firstname||!surname){showNotif("Please enter the child's name");return;}
+  const rec={child_name:firstname+' '+surname,dob:document.getElementById('j-dob').value,section:document.getElementById('j-section').value,parent_name:document.getElementById('j-parent').value,relationship:document.getElementById('j-rel').value,email:document.getElementById('j-email').value,phone:document.getElementById('j-phone').value,address:document.getElementById('j-address').value,notes:document.getElementById('j-notes').value,status:'Pending'};
+  const{error}=await db.from('join_requests').insert([rec]);
+  if(error){showNotif('Error submitting: '+error.message);return;}
+  document.getElementById('join-form-card').style.display='none';
+  document.getElementById('join-success').style.display='block';
   showNotif('Registration submitted! 🎉');
 }
 
-// ── ADMIN HELPERS ──
-function toggleAddForm(id) {
-  const f = document.getElementById(id);
-  f.classList.toggle('hidden');
-}
-function addEventRow() {
-  showNotif('Event added successfully!');
-  toggleAddForm('add-event-form');
-}
-function deleteRow(btn) {
-  btn.closest('tr').style.opacity='0.4';
-  setTimeout(() => btn.closest('tr').remove(), 400);
-  showNotif('Item deleted');
+async function deleteRecord(table,id,btn){
+  const{error}=await db.from(table).delete().eq('id',id);
+  if(error){showNotif('Error: '+error.message);return;}
+  btn.closest('tr').remove();showNotif('Deleted ✓');loadAdminDashboard();
 }
 
-// ── NOTIFICATION ──
-function showNotif(msg) {
-  const n = document.getElementById('notif');
-  n.textContent = msg;
-  n.classList.add('show');
-  setTimeout(() => n.classList.remove('show'), 3000);
-}
-
-// Gallery filter buttons (cosmetic)
-document.querySelectorAll('#page-gallery .filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('#page-gallery .filter-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
+window.addEventListener('load',()=>{loadHomeEvents();loadHomeNews();});
 </script>
 </body>
-  <script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
-    });
-  }
-</script>
 </html>
