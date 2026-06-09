@@ -886,7 +886,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
           </div>
           <div><div style="font-weight:700;font-size:15px;">1st Terrington Scout Group</div><div style="font-size:12px;opacity:0.6;">Est. 1923 · North Yorkshire</div></div>
         </div>
-        <p>Registered Charity No. 1234567. Serving young people in Terrington and surrounding villages since 1923.</p>
+        <p>Registered Charity No. <span id="site-charity-number">1234567</span>. Serving young people in Terrington and surrounding villages since 1923.</p>
       </div>
       <div class="footer-col"><h4>Navigate</h4><a onclick="showPage('sections')">Our Sections</a><a onclick="showPage('events')">Events</a><a onclick="showPage('news')">News</a><a onclick="showPage('gallery')">Gallery</a><a onclick="showPage('fundraising')">Fundraising</a><a onclick="showPage('downloads')">Downloads</a></div>
       <div class="footer-col"><h4>Sections</h4><a onclick="showPage('sections')">🐿️ Squirrels (4–6)</a><a onclick="showPage('sections')">🦫 Beavers (5½–8)</a><a onclick="showPage('sections')">🐯 Cubs (8–10½)</a><a onclick="showPage('sections')">⚜ Scouts (10½–14)</a><a onclick="showPage('sections')">🧭 Explorers (14–18)</a><a onclick="showPage('join')">Join Us</a></div>
@@ -1092,6 +1092,7 @@ function applySettingsToSite() {
   if (s.phone) document.getElementById('footer-phone').textContent = '📞 ' + s.phone;
   if (s.email) document.getElementById('footer-email').textContent = '✉ ' + s.email;
   if (s.address) document.getElementById('footer-address').textContent = '📍 ' + s.address;
+  if (s.charity_number) document.getElementById('site-charity-number').textContent = s.charity_number;
   if (s.fundraising_raised && s.fundraising_goal) {
     const pct = Math.min(100, Math.round((parseInt(s.fundraising_raised) / parseInt(s.fundraising_goal)) * 100));
     const bar = document.querySelector('.progress-bar-fill');
