@@ -822,6 +822,8 @@ async function doLogin(){
     }
   }
   currentRole=roleData||{role:'section_leader',section:'All',name:currentUser.email};
+  const isAdmin = currentRole.role==='admin' || currentRole.section==='All';
+  if(isAdmin) currentRole.role='admin';
   document.getElementById('admin-user-label').textContent=(currentRole.name||email)+' — '+(currentRole.role==='admin'?'Group Admin':currentRole.section+' Leader');
   closeAdminLogin();
   showPage('admin');
@@ -863,7 +865,7 @@ function applyRoleRestrictions(){
   const leadersBtn=document.getElementById('leaders-nav-btn');
   if(leadersBtn) leadersBtn.style.display=isAdmin?'':'none';
   // Show section badge in sidebar
-  if(!isAdmin&&currentRole){
+  if(!isAdmin&&currentRole&&currentRole.section!=='All'){
     const badge=document.getElementById('role-badge');
     if(badge){badge.textContent='🔒 '+currentRole.section+' Leader';badge.style.display='block';}
     // Pre-select and lock section dropdowns in add forms
