@@ -1,0 +1,28 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+
+collections:
+  - name: "news"
+    label: "News"
+    folder: "_news"
+    create: true
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "Section", name: "section", widget: "select", options: ["Group News","Beavers","Cubs","Scouts","Explorers"]}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "events"
+    label: "Events"
+    folder: "_events"
+    create: true
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "Section", name: "section", widget: "select", options: ["All Sections","Beavers","Cubs","Scouts","Explorers"]}
+      - {label: "Location", name: "location", widget: "string"}
+      - {label: "Cost", name: "cost", widget: "string"}
+      - {label: "Description", name: "body", widget: "markdown"}
