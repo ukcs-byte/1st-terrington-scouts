@@ -34,6 +34,8 @@ body{font-family:'Inter',sans-serif;background:var(--white);color:var(--text-dar
 .tag-scout{background:var(--purple-pale);color:var(--purple-deep);}
 .tag-explorer{background:#D1F0E8;color:#0A5438;}
 .tag-all{background:#F0EBF8;color:var(--purple-mid);}
+.tag-squirrel{background:#FFDDE8;color:#7A0030;}
+.group-card.squirrels{background:linear-gradient(135deg,#FFE0EE,#FFC0D8);border-color:#E0336B;}
 #topbar{background:var(--purple-deep);padding:8px 0;font-size:13px;color:rgba(255,255,255,0.8);}
 #topbar .container{display:flex;justify-content:space-between;align-items:center;}
 #topbar a{color:rgba(255,255,255,0.8);text-decoration:none;}
@@ -70,7 +72,7 @@ nav{background:white;padding:0;border-bottom:1px solid var(--border);position:st
 .section-alt{background:var(--purple-ultra);}
 .section-header{text-align:center;margin-bottom:52px;}
 .section-header p{font-size:18px;color:var(--text-muted);margin-top:12px;max-width:560px;margin-left:auto;margin-right:auto;}
-.groups-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.groups-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
 .group-card{border-radius:var(--radius-lg);padding:28px 24px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all 0.2s;text-decoration:none;display:block;}
 .group-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
 .group-card.beavers{background:linear-gradient(135deg,#FFF0E0,#FFE0C0);border-color:#F0A500;}
@@ -201,8 +203,9 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
   <div class="container">
     <div class="nav-inner">
       <a class="nav-logo" href="#" onclick="showPage('home');return false;">
-        <div class="nav-logo-img">
-          <svg width="32" height="38" viewBox="0 0 100 120" fill="none">
+        <div class="nav-logo-img" id="nav-logo-wrap">
+          <img id="nav-logo-img" src="" alt="Scout Logo" style="width:52px;height:52px;border-radius:50%;object-fit:cover;display:none;">
+          <svg id="nav-logo-svg" width="32" height="38" viewBox="0 0 100 120" fill="none">
             <path d="M50 5 L60 35 L90 35 L67 54 L76 84 L50 65 L24 84 L33 54 L10 35 L40 35 Z" fill="#F0A500"/>
             <path d="M50 40 C50 40 38 52 38 65 C38 72 43 78 50 78 C57 78 62 72 62 65 C62 52 50 40 50 40 Z" fill="white"/>
             <circle cx="50" cy="62" r="6" fill="#5B3FA0"/>
@@ -275,6 +278,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
     <div class="container">
       <div class="section-header"><div class="section-label">Our Sections</div><h2 class="section-title">Something for Every Age</h2><p>From Beavers to Explorers, we welcome young people at every stage of their adventure</p></div>
       <div class="groups-grid">
+        <div class="group-card squirrels" onclick="showPage('sections')"><div class="group-icon">🐿️</div><h3>Squirrels</h3><p>Our tiniest adventurers discovering the world around them</p><span class="group-age">Ages 4–6</span></div>
         <div class="group-card beavers" onclick="showPage('sections')"><div class="group-icon">🦫</div><h3>Beavers</h3><p>Our youngest adventurers learning and having fun</p><span class="group-age">Ages 5½–8</span></div>
         <div class="group-card cubs" onclick="showPage('sections')"><div class="group-icon">🐯</div><h3>Cubs</h3><p>Building teamwork and character through challenges</p><span class="group-age">Ages 8–10½</span></div>
         <div class="group-card scouts" onclick="showPage('sections')"><div class="group-icon">⚜️</div><h3>Scouts</h3><p>Outdoor adventures and developing leadership skills</p><span class="group-age">Ages 10½–14</span></div>
@@ -294,24 +298,28 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
 <!-- SECTIONS -->
 <div id="page-sections" class="page">
   <div style="background:var(--purple-deep);padding:60px 0 40px;">
-    <div class="container"><div class="section-label" style="color:var(--gold);">Our Sections</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Meet Our Sections</h1><p style="font-size:18px;color:rgba(255,255,255,0.8);">Four sections, one family</p></div>
+    <div class="container"><div class="section-label" style="color:var(--gold);">Our Sections</div><h1 style="font-family:'Playfair Display',serif;font-size:48px;color:white;margin-bottom:12px;">Meet Our Sections</h1><p style="font-size:18px;color:rgba(255,255,255,0.8);">Five sections, one family</p></div>
   </div>
   <div class="section"><div class="container">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
-      <div><div class="section-label">Ages 5½–8</div><h2 class="section-title">🦫 Beavers</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Beavers is where the adventure begins! Exploring the outdoors, making crafts, playing games, and making friends.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Mondays 5:30–7:00pm<br><strong>Leader:</strong> Mrs. Sarah Thornton<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Beavers →</button></div>
+      <div><div class="section-label">Ages 4–6</div><h2 class="section-title">🐿️ Squirrels</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Squirrels is our brand-new youngest section — a safe, fun place for the tiniest adventurers to play, explore, and start their Scouting journey with their grown-ups close by.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;" id="squirrel-details"><strong>When:</strong> Saturdays 10:00–11:30am<br><strong>Leader:</strong> TBC<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Squirrels →</button></div>
+      <div style="background:linear-gradient(135deg,#FFE0EE,#FFC0D8);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🐿️<br><br><p style="font-size:16px;color:#7A0030;font-weight:600;">Terrington Squirrel Drey</p><p style="font-size:13px;color:#A0204A;margin-top:6px;">Motto: "Be kind, be curious!"</p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
+      <div><div class="section-label">Ages 5½–8</div><h2 class="section-title">🦫 Beavers</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Beavers is where the adventure begins! Exploring the outdoors, making crafts, playing games, and making friends.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;" id="beaver-details"><strong>When:</strong> Mondays 5:30–7:00pm<br><strong>Leader:</strong> Mrs. Sarah Thornton<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Beavers →</button></div>
       <div style="background:linear-gradient(135deg,#FFF0E0,#FFE0C0);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🦫<br><br><p style="font-size:16px;color:#7A3800;font-weight:600;">Terrington Beaver Colony</p><p style="font-size:13px;color:#A06020;margin-top:6px;">Motto: "Fun, friendship, and sharing!"</p></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
       <div style="background:linear-gradient(135deg,#FFF8E0,#FFF0B0);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🐯<br><br><p style="font-size:16px;color:#6B4A00;font-weight:600;">Terrington Cub Pack</p><p style="font-size:13px;color:#8B6020;margin-top:6px;">Motto: "Do Your Best"</p></div>
-      <div><div class="section-label">Ages 8–10½</div><h2 class="section-title">🐯 Cubs</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">First aid, cooking, camping, sports badges. All about teamwork and having a great time.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Wednesdays 6:00–7:30pm<br><strong>Leader:</strong> Mr. James Whitfield<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Cubs →</button></div>
+      <div><div class="section-label">Ages 8–10½</div><h2 class="section-title">🐯 Cubs</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">First aid, cooking, camping, sports badges. All about teamwork and having a great time.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;" id="cub-details"><strong>When:</strong> Wednesdays 6:00–7:30pm<br><strong>Leader:</strong> Mr. James Whitfield<br><strong>Where:</strong> Terrington Village Hall</p><button class="btn-primary" onclick="showPage('join')">Join Cubs →</button></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:64px;">
-      <div><div class="section-label">Ages 10½–14</div><h2 class="section-title">⚜️ Scouts</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Camping, navigation, pioneering, cooking on open fires. Duke of Edinburgh Award available.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Thursdays 6:30–8:30pm<br><strong>Leader:</strong> Mr. David Hargreaves<br><strong>Where:</strong> Scout HQ, Church Lane</p><button class="btn-primary" onclick="showPage('join')">Join Scouts →</button></div>
+      <div><div class="section-label">Ages 10½–14</div><h2 class="section-title">⚜️ Scouts</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">Camping, navigation, pioneering, cooking on open fires. Duke of Edinburgh Award available.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;" id="scout-details"><strong>When:</strong> Thursdays 6:30–8:30pm<br><strong>Leader:</strong> Mr. David Hargreaves<br><strong>Where:</strong> Scout HQ, Church Lane</p><button class="btn-primary" onclick="showPage('join')">Join Scouts →</button></div>
       <div style="background:linear-gradient(135deg,var(--purple-pale),#D4C5F5);border-radius:20px;padding:40px;text-align:center;font-size:80px;">⚜️<br><br><p style="font-size:16px;color:var(--purple-deep);font-weight:600;">Terrington Scout Troop</p><p style="font-size:13px;color:var(--purple-mid);margin-top:6px;">Motto: "Be Prepared"</p></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
       <div style="background:linear-gradient(135deg,#E0F5EE,#C0EAD8);border-radius:20px;padding:40px;text-align:center;font-size:80px;">🧭<br><br><p style="font-size:16px;color:#0A5438;font-weight:600;">Terrington Explorer Unit</p><p style="font-size:13px;color:#1D7A5A;margin-top:6px;">Motto: "Challenge Yourself"</p></div>
-      <div><div class="section-label">Ages 14–18</div><h2 class="section-title">🧭 Explorers</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">International expeditions, community service, Gold Duke of Edinburgh, and leadership training.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;"><strong>When:</strong> Fridays 7:00–9:30pm<br><strong>Leader:</strong> Ms. Rachel Booth<br><strong>Where:</strong> Scout HQ, Church Lane</p><button class="btn-primary" onclick="showPage('join')">Join Explorers →</button></div>
+      <div><div class="section-label">Ages 14–18</div><h2 class="section-title">🧭 Explorers</h2><p style="font-size:16px;color:var(--text-muted);margin:16px 0;line-height:1.8;">International expeditions, community service, Gold Duke of Edinburgh, and leadership training.</p><p style="font-size:15px;color:var(--text-mid);margin-bottom:20px;" id="explorer-details"><strong>When:</strong> Fridays 7:00–9:30pm<br><strong>Leader:</strong> Ms. Rachel Booth<br><strong>Where:</strong> Scout HQ, Church Lane</p><button class="btn-primary" onclick="showPage('join')">Join Explorers →</button></div>
     </div>
   </div></div>
 </div>
@@ -322,6 +330,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
   <div class="section"><div class="container">
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterEventsPage('all',this)">All Sections</button>
+      <button class="filter-btn" onclick="filterEventsPage('Squirrels',this)">🐿️ Squirrels</button>
       <button class="filter-btn" onclick="filterEventsPage('Beavers',this)">🦫 Beavers</button>
       <button class="filter-btn" onclick="filterEventsPage('Cubs',this)">🐯 Cubs</button>
       <button class="filter-btn" onclick="filterEventsPage('Scouts',this)">⚜ Scouts</button>
@@ -396,7 +405,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
           </div>
           <div class="form-row">
             <div class="form-group"><label>Date of Birth *</label><input type="date" id="j-dob"></div>
-            <div class="form-group"><label>Section *</label><select id="j-section"><option value="">Select...</option><option>Beavers (5½–8)</option><option>Cubs (8–10½)</option><option>Scouts (10½–14)</option><option>Explorers (14–18)</option></select></div>
+            <div class="form-group"><label>Section *</label><select id="j-section"><option value="">Select...</option><option>Squirrels (4–6)</option><option>Beavers (5½–8)</option><option>Cubs (8–10½)</option><option>Scouts (10½–14)</option><option>Explorers (14–18)</option></select></div>
           </div>
           <div class="form-row">
             <div class="form-group"><label>Parent/Guardian Name *</label><input type="text" id="j-parent" placeholder="Full name"></div>
@@ -484,7 +493,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
               <div class="form-group"><label>Title</label><input type="text" id="ev-title" placeholder="Event name"></div>
               <div class="form-group"><label>Day</label><input type="text" id="ev-day" placeholder="e.g. 14"></div>
               <div class="form-group"><label>Month</label><input type="text" id="ev-month" placeholder="e.g. Jun"></div>
-              <div class="form-group"><label>Section</label><select id="ev-section"><option>All Sections</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Section</label><select id="ev-section"><option>All Sections</option><option>Squirrels</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
               <div class="form-group"><label>Location</label><input type="text" id="ev-location" placeholder="Venue"></div>
               <div class="form-group"><label>Time</label><input type="text" id="ev-time" placeholder="e.g. 6pm–8pm"></div>
               <div class="form-group"><label>Cost</label><input type="text" id="ev-cost" placeholder="e.g. £10 or Free"></div>
@@ -501,7 +510,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
             <h3>Write News Article</h3>
             <div class="add-form-grid">
               <div class="form-group" style="grid-column:span 2"><label>Headline</label><input type="text" id="nw-title" placeholder="Article headline"></div>
-              <div class="form-group"><label>Section Tag</label><select id="nw-section"><option>Group News</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Section Tag</label><select id="nw-section"><option>Group News</option><option>Squirrels</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
               <div class="form-group"><label>Emoji</label><input type="text" id="nw-emoji" placeholder="e.g. 🏕️" style="font-size:20px;"></div>
               <div class="form-group"><label>Date</label><input type="text" id="nw-date" placeholder="e.g. 9 June 2026"></div>
             </div>
@@ -532,7 +541,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
             <h3>Add Member</h3>
             <div class="add-form-grid">
               <div class="form-group"><label>Child Name</label><input type="text" id="mb-name" placeholder="Full name"></div>
-              <div class="form-group"><label>Section</label><select id="mb-section"><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+              <div class="form-group"><label>Section</label><select id="mb-section"><option>Squirrels</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
               <div class="form-group"><label>Age</label><input type="text" id="mb-age" placeholder="Age"></div>
               <div class="form-group"><label>Parent Name</label><input type="text" id="mb-parent" placeholder="Parent/Guardian"></div>
               <div class="form-group"><label>Phone</label><input type="text" id="mb-phone" placeholder="Phone number"></div>
@@ -586,6 +595,27 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
 
             <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🖼️ Group Logo</h4>
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+                <div id="logo-preview-wrap" style="width:72px;height:72px;background:var(--purple-deep);border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                  <img id="logo-preview-img" src="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;display:none;">
+                  <svg id="logo-preview-svg" width="40" height="48" viewBox="0 0 100 120" fill="none"><path d="M50 5 L60 35 L90 35 L67 54 L76 84 L50 65 L24 84 L33 54 L10 35 L40 35 Z" fill="#F0A500"/><path d="M35 90 L50 82 L65 90 L65 100 L35 100 Z" fill="#F0A500"/></svg>
+                </div>
+                <div>
+                  <p style="font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:4px;">Upload your group logo</p>
+                  <p style="font-size:12px;color:var(--text-muted);">PNG or JPG, square image works best. Will appear in the nav bar and throughout the site.</p>
+                </div>
+              </div>
+              <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" style="display:none;" onchange="previewLogo(this)">
+              <div style="display:flex;gap:10px;">
+                <button class="btn-secondary" style="font-size:13px;padding:8px 16px;" onclick="document.getElementById('logo-file-input').click()">📁 Choose File</button>
+                <button class="btn-primary" style="font-size:13px;padding:8px 16px;" onclick="uploadLogo()" id="upload-logo-btn" disabled>⬆ Upload Logo</button>
+                <button class="btn-secondary" style="font-size:13px;padding:8px 16px;color:#C00;border-color:#C00;" onclick="removeLogo()">✕ Remove</button>
+              </div>
+              <p id="logo-upload-status" style="font-size:12px;color:var(--text-muted);margin-top:8px;"></p>
+            </div>
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
               <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">📋 Group Details</h4>
               <div class="form-group"><label>Group Name</label><input type="text" id="s-group_name" placeholder="e.g. 1st Terrington Scout Group"></div>
               <div class="form-group"><label>Phone Number</label><input type="text" id="s-phone" placeholder="e.g. 01653 648200"></div>
@@ -605,22 +635,29 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
             </div>
 
             <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
-              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🦫 Beavers Section</h4>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🐿️ Squirrels Section</h4>
+              <div class="form-group"><label>Leader Name</label><input type="text" id="s-squirrel_leader" placeholder="e.g. Mrs. Jane Smith"></div>
+              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-squirrel_day" placeholder="e.g. Saturdays 10:00–11:30am"></div>
+              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-squirrel_location" placeholder="e.g. Terrington Village Hall"></div>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">🦫 Beavers Section</h4>
               <div class="form-group"><label>Leader Name</label><input type="text" id="s-beaver_leader" placeholder="e.g. Mrs. Sarah Thornton"></div>
               <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-beaver_day" placeholder="e.g. Mondays 5:30–7:00pm"></div>
               <div class="form-group"><label>Meeting Location</label><input type="text" id="s-beaver_location" placeholder="e.g. Terrington Village Hall"></div>
-              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">🐯 Cubs Section</h4>
-              <div class="form-group"><label>Leader Name</label><input type="text" id="s-cub_leader" placeholder="e.g. Mr. James Whitfield"></div>
-              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-cub_day" placeholder="e.g. Wednesdays 6:00–7:30pm"></div>
-              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-cub_location" placeholder="e.g. Terrington Village Hall"></div>
             </div>
 
             <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
-              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">⚜️ Scouts Section</h4>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🐯 Cubs Section</h4>
+              <div class="form-group"><label>Leader Name</label><input type="text" id="s-cub_leader" placeholder="e.g. Mr. James Whitfield"></div>
+              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-cub_day" placeholder="e.g. Wednesdays 6:00–7:30pm"></div>
+              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-cub_location" placeholder="e.g. Terrington Village Hall"></div>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">⚜️ Scouts Section</h4>
               <div class="form-group"><label>Leader Name</label><input type="text" id="s-scout_leader" placeholder="e.g. Mr. David Hargreaves"></div>
               <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-scout_day" placeholder="e.g. Thursdays 6:30–8:30pm"></div>
               <div class="form-group"><label>Meeting Location</label><input type="text" id="s-scout_location" placeholder="e.g. Scout HQ, Church Lane"></div>
-              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">🧭 Explorers Section</h4>
+            </div>
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🧭 Explorers Section</h4>
               <div class="form-group"><label>Leader Name</label><input type="text" id="s-explorer_leader" placeholder="e.g. Ms. Rachel Booth"></div>
               <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-explorer_day" placeholder="e.g. Fridays 7:00–9:30pm"></div>
               <div class="form-group"><label>Meeting Location</label><input type="text" id="s-explorer_location" placeholder="e.g. Scout HQ, Church Lane"></div>
@@ -650,7 +687,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
         <p>Registered Charity No. 1234567. Serving young people in Terrington and surrounding villages since 1923.</p>
       </div>
       <div class="footer-col"><h4>Navigate</h4><a onclick="showPage('sections')">Our Sections</a><a onclick="showPage('events')">Events</a><a onclick="showPage('news')">News</a><a onclick="showPage('gallery')">Gallery</a><a onclick="showPage('fundraising')">Fundraising</a><a onclick="showPage('downloads')">Downloads</a></div>
-      <div class="footer-col"><h4>Sections</h4><a onclick="showPage('sections')">🦫 Beavers (5½–8)</a><a onclick="showPage('sections')">🐯 Cubs (8–10½)</a><a onclick="showPage('sections')">⚜ Scouts (10½–14)</a><a onclick="showPage('sections')">🧭 Explorers (14–18)</a><a onclick="showPage('join')">Join Us</a></div>
+      <div class="footer-col"><h4>Sections</h4><a onclick="showPage('sections')">🐿️ Squirrels (4–6)</a><a onclick="showPage('sections')">🦫 Beavers (5½–8)</a><a onclick="showPage('sections')">🐯 Cubs (8–10½)</a><a onclick="showPage('sections')">⚜ Scouts (10½–14)</a><a onclick="showPage('sections')">🧭 Explorers (14–18)</a><a onclick="showPage('join')">Join Us</a></div>
       <div class="footer-col"><h4>Contact</h4><a id="footer-phone">📞 01653 648200</a><a id="footer-email">✉ info@1stterringtonscouts.org.uk</a><a id="footer-address">📍 Church Lane, Terrington</a><a onclick="openAdminLogin()">⚙ Leader Login</a></div>
     </div>
     <div class="footer-bottom"><span>© 2026 1st Terrington Scout Group.</span><span>Be Prepared · Be Kind · Be Ready for Adventure</span></div>
@@ -670,7 +707,7 @@ const galleryBgs = ['linear-gradient(135deg,#C4A8F0,#9B77E0)','linear-gradient(1
 
 function showNotif(msg){const n=document.getElementById('notif');n.textContent=msg;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),3000);}
 function toggleForm(id){document.getElementById(id).classList.toggle('hidden');}
-function tagClass(s){const m={'Beavers':'tag-beaver','Cubs':'tag-cub','Scouts':'tag-scout','Explorers':'tag-explorer','All Sections':'tag-all','Group News':'tag-all','All':'tag-all'};return m[s]||'tag-all';}
+function tagClass(s){const m={'Squirrels':'tag-squirrel','Beavers':'tag-beaver','Cubs':'tag-cub','Scouts':'tag-scout','Explorers':'tag-explorer','All Sections':'tag-all','Group News':'tag-all','All':'tag-all'};return m[s]||'tag-all';}
 
 function showPage(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -716,6 +753,7 @@ function loadAllAdmin(){loadAdminDashboard();loadAdminEvents();loadAdminNews();l
 
 // ── SETTINGS ──
 let siteSettings = {};
+let logoFileToUpload = null;
 
 async function loadSiteSettings() {
   const { data } = await db.from('settings').select('*');
@@ -726,27 +764,100 @@ async function loadSiteSettings() {
 
 function applySettingsToSite() {
   const s = siteSettings;
-  // Topbar
   if (s.phone) { document.getElementById('site-phone').textContent = s.phone; document.getElementById('site-phone-link').href = 'tel:' + s.phone.replace(/\s/g,''); }
   if (s.email) { document.getElementById('site-email').textContent = s.email; document.getElementById('site-email-link').href = 'mailto:' + s.email; }
   if (s.founded) document.getElementById('site-founded').textContent = s.founded;
-  // Nav
   if (s.group_name) document.getElementById('site-group-name').textContent = s.group_name;
-  // Hero
-  if (s.hero_title) document.getElementById('site-hero-title').innerHTML = s.hero_title + ' <span style="color:var(--gold)"></span>';
+  if (s.hero_title) document.getElementById('site-hero-title').textContent = s.hero_title;
   if (s.hero_desc) document.getElementById('site-hero-desc').textContent = s.hero_desc;
-  // Footer
   if (s.phone) document.getElementById('footer-phone').textContent = '📞 ' + s.phone;
   if (s.email) document.getElementById('footer-email').textContent = '✉ ' + s.email;
   if (s.address) document.getElementById('footer-address').textContent = '📍 ' + s.address;
-  // Fundraising bar
   if (s.fundraising_raised && s.fundraising_goal) {
     const pct = Math.min(100, Math.round((parseInt(s.fundraising_raised) / parseInt(s.fundraising_goal)) * 100));
     const bar = document.querySelector('.progress-bar-fill');
     if (bar) bar.style.width = pct + '%';
-    const labels = document.querySelectorAll('.fundraising-hero p');
-    labels.forEach(el => { if (el.textContent.includes('raised')) el.textContent = ''; });
   }
+  // Section details
+  if (s.squirrel_leader || s.squirrel_day || s.squirrel_location) {
+    const el = document.getElementById('squirrel-details');
+    if (el) el.innerHTML = `<strong>When:</strong> ${s.squirrel_day||''}<br><strong>Leader:</strong> ${s.squirrel_leader||''}<br><strong>Where:</strong> ${s.squirrel_location||''}`;
+  }
+  if (s.beaver_leader || s.beaver_day || s.beaver_location) {
+    const el = document.getElementById('beaver-details');
+    if (el) el.innerHTML = `<strong>When:</strong> ${s.beaver_day||''}<br><strong>Leader:</strong> ${s.beaver_leader||''}<br><strong>Where:</strong> ${s.beaver_location||''}`;
+  }
+  if (s.cub_leader || s.cub_day || s.cub_location) {
+    const el = document.getElementById('cub-details');
+    if (el) el.innerHTML = `<strong>When:</strong> ${s.cub_day||''}<br><strong>Leader:</strong> ${s.cub_leader||''}<br><strong>Where:</strong> ${s.cub_location||''}`;
+  }
+  if (s.scout_leader || s.scout_day || s.scout_location) {
+    const el = document.getElementById('scout-details');
+    if (el) el.innerHTML = `<strong>When:</strong> ${s.scout_day||''}<br><strong>Leader:</strong> ${s.scout_leader||''}<br><strong>Where:</strong> ${s.scout_location||''}`;
+  }
+  if (s.explorer_leader || s.explorer_day || s.explorer_location) {
+    const el = document.getElementById('explorer-details');
+    if (el) el.innerHTML = `<strong>When:</strong> ${s.explorer_day||''}<br><strong>Leader:</strong> ${s.explorer_leader||''}<br><strong>Where:</strong> ${s.explorer_location||''}`;
+  }
+  // Logo
+  if (s.logo_url && s.logo_url.length > 0) {
+    applyLogo(s.logo_url);
+  }
+}
+
+function applyLogo(url) {
+  const navImg = document.getElementById('nav-logo-img');
+  const navSvg = document.getElementById('nav-logo-svg');
+  if (navImg && navSvg) { navImg.src = url; navImg.style.display = 'block'; navSvg.style.display = 'none'; }
+  const prevImg = document.getElementById('logo-preview-img');
+  const prevSvg = document.getElementById('logo-preview-svg');
+  if (prevImg && prevSvg) { prevImg.src = url; prevImg.style.display = 'block'; prevSvg.style.display = 'none'; }
+}
+
+function previewLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  logoFileToUpload = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prevImg = document.getElementById('logo-preview-img');
+    const prevSvg = document.getElementById('logo-preview-svg');
+    prevImg.src = e.target.result; prevImg.style.display = 'block'; prevSvg.style.display = 'none';
+    document.getElementById('upload-logo-btn').disabled = false;
+    document.getElementById('logo-upload-status').textContent = file.name + ' ready to upload';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadLogo() {
+  if (!logoFileToUpload) return;
+  document.getElementById('logo-upload-status').textContent = 'Uploading...';
+  const ext = logoFileToUpload.name.split('.').pop();
+  const filename = 'group-logo.' + ext;
+  const { data, error } = await db.storage.from('site-assets').upload(filename, logoFileToUpload, { upsert: true, contentType: logoFileToUpload.type });
+  if (error) { document.getElementById('logo-upload-status').textContent = 'Upload failed: ' + error.message; return; }
+  const { data: urlData } = db.storage.from('site-assets').getPublicUrl(filename);
+  const publicUrl = urlData.publicUrl + '?t=' + Date.now();
+  await db.from('settings').upsert({ key: 'logo_url', value: publicUrl }, { onConflict: 'key' });
+  applyLogo(publicUrl);
+  siteSettings.logo_url = publicUrl;
+  logoFileToUpload = null;
+  document.getElementById('upload-logo-btn').disabled = true;
+  document.getElementById('logo-upload-status').textContent = 'Logo uploaded and applied! ✓';
+  showNotif('Logo updated! ✓');
+}
+
+async function removeLogo() {
+  await db.from('settings').upsert({ key: 'logo_url', value: '' }, { onConflict: 'key' });
+  siteSettings.logo_url = '';
+  const navImg = document.getElementById('nav-logo-img');
+  const navSvg = document.getElementById('nav-logo-svg');
+  if (navImg && navSvg) { navImg.style.display = 'none'; navSvg.style.display = 'block'; }
+  const prevImg = document.getElementById('logo-preview-img');
+  const prevSvg = document.getElementById('logo-preview-svg');
+  if (prevImg && prevSvg) { prevImg.style.display = 'none'; prevSvg.style.display = 'block'; }
+  document.getElementById('logo-upload-status').textContent = 'Logo removed';
+  showNotif('Logo removed');
 }
 
 async function loadAdminSettings() {
@@ -756,17 +867,21 @@ async function loadAdminSettings() {
     const el = document.getElementById('s-' + row.key);
     if (el) el.value = row.value || '';
   });
+  if (siteSettings.logo_url && siteSettings.logo_url.length > 0) {
+    const prevImg = document.getElementById('logo-preview-img');
+    const prevSvg = document.getElementById('logo-preview-svg');
+    if (prevImg) { prevImg.src = siteSettings.logo_url; prevImg.style.display = 'block'; }
+    if (prevSvg) prevSvg.style.display = 'none';
+  }
 }
 
 async function saveAllSettings() {
-  const keys = ['group_name','phone','email','address','founded','charity_number','hero_title','hero_desc','fundraising_raised','fundraising_goal','beaver_leader','beaver_day','beaver_location','cub_leader','cub_day','cub_location','scout_leader','scout_day','scout_location','explorer_leader','explorer_day','explorer_location'];
+  const keys = ['group_name','phone','email','address','founded','charity_number','hero_title','hero_desc','fundraising_raised','fundraising_goal','squirrel_leader','squirrel_day','squirrel_location','beaver_leader','beaver_day','beaver_location','cub_leader','cub_day','cub_location','scout_leader','scout_day','scout_location','explorer_leader','explorer_day','explorer_location'];
   const updates = keys.map(key => {
     const el = document.getElementById('s-' + key);
     return el ? db.from('settings').upsert({ key, value: el.value }, { onConflict: 'key' }) : Promise.resolve();
   });
-  const results = await Promise.all(updates);
-  const errors = results.filter(r => r && r.error);
-  if (errors.length > 0) { showNotif('Some settings failed to save'); return; }
+  await Promise.all(updates);
   showNotif('All settings saved! ✓');
   await loadSiteSettings();
 }
