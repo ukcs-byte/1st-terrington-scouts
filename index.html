@@ -188,6 +188,105 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
 .notif.show{transform:translateY(0);opacity:1;}
 .loading{text-align:center;padding:40px;color:var(--text-muted);font-size:15px;}
 .empty-state{text-align:center;padding:48px;color:var(--text-muted);}
+
+/* ── MOBILE HAMBURGER ── */
+.mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px;}
+.mobile-menu-btn span{display:block;width:24px;height:2px;background:var(--purple-deep);border-radius:2px;transition:all 0.3s;}
+.mobile-nav{display:none;position:fixed;inset:0;background:white;z-index:999;flex-direction:column;padding:80px 24px 40px;gap:8px;overflow-y:auto;}
+.mobile-nav.open{display:flex;}
+.mobile-nav .nav-link{font-size:18px;padding:14px 16px;border-radius:10px;text-align:left;width:100%;}
+.mobile-nav-close{position:absolute;top:20px;right:20px;background:none;border:none;font-size:28px;cursor:pointer;color:var(--purple-deep);}
+.mobile-nav-logo{position:absolute;top:16px;left:20px;display:flex;align-items:center;gap:10px;}
+
+@media(max-width:768px){
+  /* NAV */
+  .nav-links{display:none;}
+  .mobile-menu-btn{display:flex;}
+  .nav-inner{padding:0 4px;}
+  .nav-logo{margin-right:auto;}
+  .nav-actions{display:none;}
+
+  /* HERO */
+  .hero-inner{grid-template-columns:1fr;gap:32px;}
+  .hero-visual{display:none;}
+  .hero-title{font-size:36px;}
+  .hero-desc{font-size:16px;}
+  .hero-stats{grid-template-columns:repeat(3,1fr);gap:10px;}
+  .hero-stat strong{font-size:22px;}
+  #hero{padding:48px 0 40px;}
+
+  /* SECTIONS GRID */
+  .groups-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .group-card{padding:20px 14px;}
+  .group-icon{font-size:36px;margin-bottom:10px;}
+  .group-card h3{font-size:16px;}
+
+  /* SECTION TITLE */
+  .section-title{font-size:28px;}
+  .section{padding:48px 0;}
+  .section-header{margin-bottom:32px;}
+  .section-header p{font-size:15px;}
+
+  /* EVENTS */
+  .event-card{grid-template-columns:64px 1fr;gap:12px;}
+  .event-card>div:last-child{display:none;}
+  .event-date .day{font-size:22px;}
+  .event-date .month{font-size:10px;}
+  .event-info h3{font-size:14px;}
+  .event-info p{font-size:13px;display:none;}
+  .event-meta{gap:8px;}
+  .event-meta span{font-size:11px;}
+
+  /* NEWS */
+  .news-grid{grid-template-columns:1fr;gap:16px;}
+  .news-img{height:140px;}
+
+  /* GALLERY */
+  .gallery-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:140px;gap:6px;}
+  .gallery-item.wide{grid-column:span 2;}
+
+  /* DOWNLOADS */
+  .downloads-grid{grid-template-columns:1fr;}
+
+  /* FUNDRAISE */
+  .fundraise-cards{grid-template-columns:1fr;gap:16px;}
+  .fundraising-hero{padding:28px 20px;}
+  .fundraising-hero h2{font-size:24px;}
+
+  /* JOIN */
+  .join-layout{grid-template-columns:1fr;gap:32px;}
+  .form-row{grid-template-columns:1fr;}
+  .form-card{padding:24px 16px;}
+
+  /* SECTIONS PAGE */
+  #page-sections .section > .container > div{grid-template-columns:1fr!important;gap:24px!important;}
+  #page-sections .section > .container > div > div:nth-child(1):not([style*="font-size:80px"]){order:1;}
+  #page-sections .section > .container > div > div[style*="font-size:80px"]{display:none;}
+
+  /* FOOTER */
+  .footer-grid{grid-template-columns:1fr 1fr;gap:24px;}
+  .footer-brand{grid-column:span 2;}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center;}
+
+  /* ADMIN */
+  .admin-layout{grid-template-columns:1fr;}
+  .admin-sidebar{display:none;}
+  .admin-sidebar.mobile-open{display:block;position:fixed;inset:0;z-index:500;overflow-y:auto;padding-bottom:40px;}
+  .admin-topbar{padding:0 16px;}
+  .admin-main{padding:16px;}
+  .admin-stats{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .admin-stat .num{font-size:24px;}
+  .add-form-grid{grid-template-columns:1fr!important;}
+  .admin-table-wrap{overflow-x:auto;}
+  .admin-table{min-width:600px;}
+  .admin-header{flex-direction:column;gap:12px;align-items:flex-start;}
+
+  /* TOPBAR */
+  #topbar .container{flex-direction:column;gap:4px;text-align:center;font-size:11px;}
+
+  /* PAGE HEADERS */
+  #page-events h1,#page-news h1,#page-gallery h1,#page-sections h1,#page-downloads h1,#page-join h1,#page-fundraising h1{font-size:32px!important;}
+}
 </style>
 </head>
 <body>
@@ -227,9 +326,34 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
       <div class="nav-actions">
         <button class="btn-admin" onclick="openAdminLogin()">⚙ Leader Login</button>
       </div>
+      <button class="mobile-menu-btn" onclick="openMobileMenu()" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" onclick="closeMobileMenu()">✕</button>
+  <div class="mobile-nav-logo">
+    <div style="width:36px;height:36px;background:var(--purple-deep);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+      <svg width="20" height="24" viewBox="0 0 100 120" fill="none"><path d="M50 5 L60 35 L90 35 L67 54 L76 84 L50 65 L24 84 L33 54 L10 35 L40 35 Z" fill="#F0A500"/><path d="M35 90 L50 82 L65 90 L65 100 L35 100 Z" fill="#F0A500"/></svg>
+    </div>
+    <span style="font-weight:800;font-size:14px;color:var(--purple-deep);">1st Terrington</span>
+  </div>
+  <button class="nav-link" onclick="showPage('home');closeMobileMenu()">🏠 Home</button>
+  <button class="nav-link" onclick="showPage('sections');closeMobileMenu()">🗂 Sections</button>
+  <button class="nav-link" onclick="showPage('events');closeMobileMenu()">📅 Events</button>
+  <button class="nav-link" onclick="showPage('news');closeMobileMenu()">📰 News</button>
+  <button class="nav-link" onclick="showPage('gallery');closeMobileMenu()">🖼️ Gallery</button>
+  <button class="nav-link" onclick="showPage('fundraising');closeMobileMenu()">💰 Fundraising</button>
+  <button class="nav-link" onclick="showPage('downloads');closeMobileMenu()">📁 Downloads</button>
+  <button class="nav-link" onclick="showPage('join');closeMobileMenu()">✋ Join Us</button>
+  <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="openAdminLogin();closeMobileMenu()">⚙ Leader Login</button>
+  </div>
+</div>
 
 <!-- HOME -->
 <div id="page-home" class="page active">
@@ -482,6 +606,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
 <div id="page-admin" class="page">
   <div class="admin-panel">
     <div class="admin-topbar">
+      <button style="background:none;border:none;color:white;font-size:22px;cursor:pointer;padding:0 8px 0 0;" id="admin-menu-btn" onclick="toggleAdminSidebar()">☰</button>
       <strong>⚜ 1st Terrington Scouts — Admin</strong>
       <span id="admin-user-label">Section Leader</span>
       <button class="admin-logout" onclick="adminLogout()">Logout</button>
@@ -850,6 +975,9 @@ function showAdminSection(id,el){
   document.getElementById('admin-'+id).classList.add('active');
   document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
+  // Close sidebar on mobile
+  const sb=document.querySelector('.admin-sidebar');
+  if(sb&&sb.classList.contains('mobile-open')){toggleAdminSidebar();}
 }
 
 function loadAllAdmin(){
@@ -1322,6 +1450,23 @@ async function deleteRecord(table,id,btn){
 }
 
 window.addEventListener('load',()=>{loadHomeEvents();loadHomeNews();loadSiteSettings();});
+
+function openMobileMenu(){document.getElementById('mobile-nav').classList.add('open');document.body.style.overflow='hidden';}
+function closeMobileMenu(){document.getElementById('mobile-nav').classList.remove('open');document.body.style.overflow='';}
+
+function toggleAdminSidebar(){
+  const sb=document.querySelector('.admin-sidebar');
+  sb.classList.toggle('mobile-open');
+  if(sb.classList.contains('mobile-open')){
+    sb.style.background='white';
+    // Add close overlay
+    let overlay=document.getElementById('sb-overlay');
+    if(!overlay){overlay=document.createElement('div');overlay.id='sb-overlay';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:499;';overlay.onclick=toggleAdminSidebar;document.body.appendChild(overlay);}
+  } else {
+    const overlay=document.getElementById('sb-overlay');
+    if(overlay)overlay.remove();
+  }
+}
 </script>
 </body>
 </html>
