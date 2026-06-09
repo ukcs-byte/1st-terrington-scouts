@@ -811,20 +811,31 @@ async function doLogin(){
   const {data,error}=await db.auth.signInWithPassword({email,password:pass});
   if(error){document.getElementById('login-error').style.display='block';return;}
   currentUser=data.user;
-  // Load role — first try by user_id, then by email (first login match)
-  let {data:roleData}=await db.from('leader_roles').select('*').eq('user_id',currentUser.id).single();
-  if(!roleData){
-    // Try matching by email and update user_id
-    const{data:emailMatch}=await db.from('leader_roles').select('*').eq('email',currentUser.email).single();
-    if(emailMatch){
-      await db.from('leader_roles').update({user_id:currentUser.id}).eq('email',currentUser.email);
-      roleData=emailMatch;
-    }
+
+  // Fetch role by email (most reliable)
+  const {data:roles}=await db.from('leader_roles').select('*').eq('email',currentUser.email);
+  let roleData = roles && roles.length>0 ? roles[0] : null;
+
+  // Update user_id if missing
+  if(roleData && !roleData.user_id){
+    await db.from('leader_roles').update({user_id:currentUser.id}).eq('email',currentUser.email);
   }
-  currentRole=roleData||{role:'section_leader',section:'All',name:currentUser.email};
-  const isAdmin = currentRole.role==='admin' || currentRole.section==='All';
-  if(isAdmin) currentRole.role='admin';
-  document.getElementById('admin-user-label').textContent=(currentRole.name||email)+' — '+(currentRole.role==='admin'?'Group Admin':currentRole.section+' Leader');
+
+  // Set role — default to admin if no role found (fallback for first user)
+  if(roleData){
+    currentRole = roleData;
+    // Force admin if section is All or role is admin
+    if(currentRole.role==='admin'||currentRole.section==='All'){
+      currentRole.role='admin';
+    }
+  } else {
+    // No role record found — treat as admin so you're not locked out
+    currentRole = {role:'admin',section:'All',name:email};
+    showNotif('⚠ No role found — logged in as admin. Add yourself in Leaders & Roles.');
+  }
+
+  const isAdmin = currentRole.role==='admin';
+  document.getElementById('admin-user-label').textContent=(currentRole.name||email)+' — '+(isAdmin?'Group Admin':currentRole.section+' Leader');
   closeAdminLogin();
   showPage('admin');
   applyRoleRestrictions();
