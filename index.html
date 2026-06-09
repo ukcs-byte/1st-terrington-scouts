@@ -192,8 +192,8 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
 
 <div id="topbar">
   <div class="container">
-    <span>📍 Terrington, North Yorkshire &nbsp;|&nbsp; Est. 1923</span>
-    <span><a href="tel:01653648200">📞 01653 648200</a> &nbsp;|&nbsp; <a href="mailto:info@1stterringtonscouts.org.uk">✉ info@1stterringtonscouts.org.uk</a></span>
+    <span>📍 Terrington, North Yorkshire &nbsp;|&nbsp; Est. <span id="site-founded">1923</span></span>
+    <span><a id="site-phone-link" href="tel:01653648200">📞 <span id="site-phone">01653 648200</span></a> &nbsp;|&nbsp; <a id="site-email-link" href="mailto:info@1stterringtonscouts.org.uk">✉ <span id="site-email">info@1stterringtonscouts.org.uk</span></a></span>
   </div>
 </div>
 
@@ -209,7 +209,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
             <path d="M35 90 L50 82 L65 90 L65 100 L35 100 Z" fill="#F0A500"/>
           </svg>
         </div>
-        <div class="nav-logo-text"><span>1st Terrington</span><span>Scout Group</span></div>
+        <div class="nav-logo-text"><span id="site-group-name">1st Terrington</span><span>Scout Group</span></div>
       </a>
       <div class="nav-links">
         <button class="nav-link active" onclick="showPage('home')">Home</button>
@@ -235,8 +235,8 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
       <div class="hero-inner">
         <div>
           <div class="hero-badge">⚜ North Yorkshire Scouts</div>
-          <h1 class="hero-title">Adventure<br>Starts <span>Here</span></h1>
-          <p class="hero-desc">Join 1st Terrington Scout Group — where young people aged 5–18 explore, learn, and grow through outdoor adventure, community, and lifelong skills.</p>
+          <h1 class="hero-title" id="site-hero-title">Adventure<br>Starts <span>Here</span></h1>
+          <p class="hero-desc" id="site-hero-desc">Join 1st Terrington Scout Group — where young people aged 5–18 explore, learn, and grow through outdoor adventure, community, and lifelong skills.</p>
           <div class="hero-actions">
             <button class="btn-gold" onclick="showPage('join')">Join the Group →</button>
             <button class="btn-secondary" style="color:white;border-color:rgba(255,255,255,0.5);" onclick="showPage('events')">Upcoming Events</button>
@@ -458,6 +458,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
         <button class="admin-nav-item" onclick="showAdminSection('downloads-admin',this)"><span>📁</span> Downloads</button>
         <button class="admin-nav-item" onclick="showAdminSection('fundraising-admin',this)"><span>💰</span> Fundraising</button>
         <button class="admin-nav-item" onclick="showAdminSection('joins-admin',this)"><span>📋</span> Join Requests</button>
+        <button class="admin-nav-item" onclick="showAdminSection('settings-admin',this)"><span>⚙️</span> Site Settings</button>
       </div>
       <div class="admin-main">
 
@@ -578,6 +579,59 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
           <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Child</th><th>Section</th><th>Parent</th><th>Email</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="joins-admin-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
+        <div class="admin-section" id="admin-settings-admin">
+          <div class="admin-header"><h2>Site Settings</h2><button class="btn-primary" onclick="saveAllSettings()">💾 Save All Changes</button></div>
+          <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Changes save instantly and update the live website straight away.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">📋 Group Details</h4>
+              <div class="form-group"><label>Group Name</label><input type="text" id="s-group_name" placeholder="e.g. 1st Terrington Scout Group"></div>
+              <div class="form-group"><label>Phone Number</label><input type="text" id="s-phone" placeholder="e.g. 01653 648200"></div>
+              <div class="form-group"><label>Email Address</label><input type="email" id="s-email" placeholder="e.g. info@scouts.org.uk"></div>
+              <div class="form-group"><label>Address</label><input type="text" id="s-address" placeholder="e.g. Church Lane, Terrington"></div>
+              <div class="form-group"><label>Year Founded</label><input type="text" id="s-founded" placeholder="e.g. 1923"></div>
+              <div class="form-group"><label>Charity Number</label><input type="text" id="s-charity_number" placeholder="e.g. 1234567"></div>
+            </div>
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🏠 Homepage</h4>
+              <div class="form-group"><label>Hero Title</label><input type="text" id="s-hero_title" placeholder="e.g. Adventure Starts Here"></div>
+              <div class="form-group"><label>Hero Description</label><textarea id="s-hero_desc" style="min-height:100px;" placeholder="Short intro paragraph on the homepage"></textarea></div>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">💰 Fundraising Goal</h4>
+              <div class="form-group"><label>Amount Raised (£)</label><input type="text" id="s-fundraising_raised" placeholder="e.g. 6800"></div>
+              <div class="form-group"><label>Total Goal (£)</label><input type="text" id="s-fundraising_goal" placeholder="e.g. 10000"></div>
+            </div>
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">🦫 Beavers Section</h4>
+              <div class="form-group"><label>Leader Name</label><input type="text" id="s-beaver_leader" placeholder="e.g. Mrs. Sarah Thornton"></div>
+              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-beaver_day" placeholder="e.g. Mondays 5:30–7:00pm"></div>
+              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-beaver_location" placeholder="e.g. Terrington Village Hall"></div>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">🐯 Cubs Section</h4>
+              <div class="form-group"><label>Leader Name</label><input type="text" id="s-cub_leader" placeholder="e.g. Mr. James Whitfield"></div>
+              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-cub_day" placeholder="e.g. Wednesdays 6:00–7:30pm"></div>
+              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-cub_location" placeholder="e.g. Terrington Village Hall"></div>
+            </div>
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">⚜️ Scouts Section</h4>
+              <div class="form-group"><label>Leader Name</label><input type="text" id="s-scout_leader" placeholder="e.g. Mr. David Hargreaves"></div>
+              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-scout_day" placeholder="e.g. Thursdays 6:30–8:30pm"></div>
+              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-scout_location" placeholder="e.g. Scout HQ, Church Lane"></div>
+              <h4 style="font-weight:700;color:var(--purple-deep);margin:20px 0 16px;font-size:16px;">🧭 Explorers Section</h4>
+              <div class="form-group"><label>Leader Name</label><input type="text" id="s-explorer_leader" placeholder="e.g. Ms. Rachel Booth"></div>
+              <div class="form-group"><label>Meeting Day &amp; Time</label><input type="text" id="s-explorer_day" placeholder="e.g. Fridays 7:00–9:30pm"></div>
+              <div class="form-group"><label>Meeting Location</label><input type="text" id="s-explorer_location" placeholder="e.g. Scout HQ, Church Lane"></div>
+            </div>
+
+          </div>
+          <div style="margin-top:24px;text-align:right;">
+            <button class="btn-primary" onclick="saveAllSettings()">💾 Save All Changes</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -597,7 +651,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
       </div>
       <div class="footer-col"><h4>Navigate</h4><a onclick="showPage('sections')">Our Sections</a><a onclick="showPage('events')">Events</a><a onclick="showPage('news')">News</a><a onclick="showPage('gallery')">Gallery</a><a onclick="showPage('fundraising')">Fundraising</a><a onclick="showPage('downloads')">Downloads</a></div>
       <div class="footer-col"><h4>Sections</h4><a onclick="showPage('sections')">🦫 Beavers (5½–8)</a><a onclick="showPage('sections')">🐯 Cubs (8–10½)</a><a onclick="showPage('sections')">⚜ Scouts (10½–14)</a><a onclick="showPage('sections')">🧭 Explorers (14–18)</a><a onclick="showPage('join')">Join Us</a></div>
-      <div class="footer-col"><h4>Contact</h4><a>📞 01653 648200</a><a>✉ info@1stterringtonscouts.org.uk</a><a>📍 Church Lane, Terrington</a><a onclick="openAdminLogin()">⚙ Leader Login</a></div>
+      <div class="footer-col"><h4>Contact</h4><a id="footer-phone">📞 01653 648200</a><a id="footer-email">✉ info@1stterringtonscouts.org.uk</a><a id="footer-address">📍 Church Lane, Terrington</a><a onclick="openAdminLogin()">⚙ Leader Login</a></div>
     </div>
     <div class="footer-bottom"><span>© 2026 1st Terrington Scout Group.</span><span>Be Prepared · Be Kind · Be Ready for Adventure</span></div>
   </div>
@@ -658,7 +712,64 @@ function showAdminSection(id,el){
   if(el)el.classList.add('active');
 }
 
-function loadAllAdmin(){loadAdminDashboard();loadAdminEvents();loadAdminNews();loadAdminGallery();loadAdminMembers();loadAdminDownloads();loadAdminFundraising();loadAdminJoins();}
+function loadAllAdmin(){loadAdminDashboard();loadAdminEvents();loadAdminNews();loadAdminGallery();loadAdminMembers();loadAdminDownloads();loadAdminFundraising();loadAdminJoins();loadAdminSettings();}
+
+// ── SETTINGS ──
+let siteSettings = {};
+
+async function loadSiteSettings() {
+  const { data } = await db.from('settings').select('*');
+  if (!data) return;
+  data.forEach(row => { siteSettings[row.key] = row.value; });
+  applySettingsToSite();
+}
+
+function applySettingsToSite() {
+  const s = siteSettings;
+  // Topbar
+  if (s.phone) { document.getElementById('site-phone').textContent = s.phone; document.getElementById('site-phone-link').href = 'tel:' + s.phone.replace(/\s/g,''); }
+  if (s.email) { document.getElementById('site-email').textContent = s.email; document.getElementById('site-email-link').href = 'mailto:' + s.email; }
+  if (s.founded) document.getElementById('site-founded').textContent = s.founded;
+  // Nav
+  if (s.group_name) document.getElementById('site-group-name').textContent = s.group_name;
+  // Hero
+  if (s.hero_title) document.getElementById('site-hero-title').innerHTML = s.hero_title + ' <span style="color:var(--gold)"></span>';
+  if (s.hero_desc) document.getElementById('site-hero-desc').textContent = s.hero_desc;
+  // Footer
+  if (s.phone) document.getElementById('footer-phone').textContent = '📞 ' + s.phone;
+  if (s.email) document.getElementById('footer-email').textContent = '✉ ' + s.email;
+  if (s.address) document.getElementById('footer-address').textContent = '📍 ' + s.address;
+  // Fundraising bar
+  if (s.fundraising_raised && s.fundraising_goal) {
+    const pct = Math.min(100, Math.round((parseInt(s.fundraising_raised) / parseInt(s.fundraising_goal)) * 100));
+    const bar = document.querySelector('.progress-bar-fill');
+    if (bar) bar.style.width = pct + '%';
+    const labels = document.querySelectorAll('.fundraising-hero p');
+    labels.forEach(el => { if (el.textContent.includes('raised')) el.textContent = ''; });
+  }
+}
+
+async function loadAdminSettings() {
+  const { data } = await db.from('settings').select('*');
+  if (!data) return;
+  data.forEach(row => {
+    const el = document.getElementById('s-' + row.key);
+    if (el) el.value = row.value || '';
+  });
+}
+
+async function saveAllSettings() {
+  const keys = ['group_name','phone','email','address','founded','charity_number','hero_title','hero_desc','fundraising_raised','fundraising_goal','beaver_leader','beaver_day','beaver_location','cub_leader','cub_day','cub_location','scout_leader','scout_day','scout_location','explorer_leader','explorer_day','explorer_location'];
+  const updates = keys.map(key => {
+    const el = document.getElementById('s-' + key);
+    return el ? db.from('settings').upsert({ key, value: el.value }, { onConflict: 'key' }) : Promise.resolve();
+  });
+  const results = await Promise.all(updates);
+  const errors = results.filter(r => r && r.error);
+  if (errors.length > 0) { showNotif('Some settings failed to save'); return; }
+  showNotif('All settings saved! ✓');
+  await loadSiteSettings();
+}
 
 function eventCardHTML(e){return`<div class="event-card"><div class="event-date"><div class="day">${e.date||'—'}</div><div class="month">${e.month||''}</div></div><div class="event-info"><h3>${e.title}</h3><p>${e.description||''}</p><div class="event-meta"><span class="tag ${tagClass(e.section)}">${e.section||'All'}</span><span>📍 ${e.location||''}</span><span>🕐 ${e.time||''}</span></div></div><div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">${e.cost||''}</span></div></div>`;}
 
@@ -857,7 +968,7 @@ async function deleteRecord(table,id,btn){
   btn.closest('tr').remove();showNotif('Deleted ✓');loadAdminDashboard();
 }
 
-window.addEventListener('load',()=>{loadHomeEvents();loadHomeNews();});
+window.addEventListener('load',()=>{loadHomeEvents();loadHomeNews();loadSiteSettings();});
 </script>
 </body>
 </html>
