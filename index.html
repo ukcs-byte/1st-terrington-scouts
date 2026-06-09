@@ -489,6 +489,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
     <div class="admin-layout">
       <div class="admin-sidebar">
         <button class="admin-nav-item active" onclick="showAdminSection('dashboard',this)"><span>📊</span> Dashboard</button>
+        <div id="role-badge" style="display:none;margin:8px 16px;font-size:12px;font-weight:600;padding:6px 12px;background:var(--purple-pale);color:var(--purple-deep);border-radius:8px;text-align:center;"></div>
         <button class="admin-nav-item" onclick="showAdminSection('events-admin',this)"><span>📅</span> Events</button>
         <button class="admin-nav-item" onclick="showAdminSection('news-admin',this)"><span>📰</span> News</button>
         <button class="admin-nav-item" onclick="showAdminSection('gallery-admin',this)"><span>🖼️</span> Gallery</button>
@@ -864,7 +865,35 @@ function applyRoleRestrictions(){
   // Show section badge in sidebar
   if(!isAdmin&&currentRole){
     const badge=document.getElementById('role-badge');
-    if(badge){badge.textContent='🔒 '+currentRole.section+' only';badge.style.display='block';}
+    if(badge){badge.textContent='🔒 '+currentRole.section+' Leader';badge.style.display='block';}
+    // Pre-select and lock section dropdowns in add forms
+    const dropdowns=['ev-section','nw-section','mb-section'];
+    dropdowns.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el) return;
+      // Set value to leader's section
+      for(let i=0;i<el.options.length;i++){
+        if(el.options[i].value===currentRole.section||el.options[i].text===currentRole.section){
+          el.selectedIndex=i; break;
+        }
+      }
+      // Lock it so they can't change it
+      el.disabled=true;
+      el.style.background='var(--purple-ultra)';
+      el.style.color='var(--text-muted)';
+    });
+    // Hide "All Sections" option from events dropdown
+    const evSec=document.getElementById('ev-section');
+    if(evSec){
+      for(let i=0;i<evSec.options.length;i++){
+        if(evSec.options[i].value==='All Sections'||evSec.options[i].text==='All Sections'){
+          evSec.options[i].style.display='none';
+        }
+      }
+    }
+    // Show section-specific welcome on dashboard
+    const dashHeader=document.querySelector('#admin-dashboard .admin-header h2');
+    if(dashHeader) dashHeader.textContent=currentRole.section+' Dashboard';
   }
 }
 
@@ -903,7 +932,7 @@ async function saveLeader(){
   loadAdminLeaders();
 }
 
-
+async function loadSiteSettings() {
   const { data } = await db.from('settings').select('*');
   if (!data) return;
   data.forEach(row => { siteSettings[row.key] = row.value; });
