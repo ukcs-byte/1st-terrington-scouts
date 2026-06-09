@@ -496,7 +496,9 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
         <button class="admin-nav-item" onclick="showAdminSection('downloads-admin',this)"><span>📁</span> Downloads</button>
         <button class="admin-nav-item" onclick="showAdminSection('fundraising-admin',this)"><span>💰</span> Fundraising</button>
         <button class="admin-nav-item" onclick="showAdminSection('joins-admin',this)"><span>📋</span> Join Requests</button>
+        <button class="admin-nav-item" id="leaders-nav-btn" onclick="showAdminSection('leaders-admin',this)"><span>👤</span> Leaders &amp; Roles</button>
         <button class="admin-nav-item" onclick="showAdminSection('settings-admin',this)"><span>⚙️</span> Site Settings</button>
+        <div id="role-badge" style="display:none;margin:12px 16px 0;font-size:11px;font-weight:700;color:var(--purple-mid);background:var(--purple-pale);padding:6px 12px;border-radius:20px;text-align:center;"></div>
       </div>
       <div class="admin-main">
 
@@ -625,6 +627,31 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
           <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Child</th><th>Section</th><th>Parent</th><th>Email</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="joins-admin-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
+        <div class="admin-section" id="admin-leaders-admin">
+          <div class="admin-header"><h2>Leaders &amp; Roles</h2><button class="btn-primary" onclick="toggleForm('add-leader-form')">+ Add Leader</button></div>
+          <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Manage which leaders have access to which sections. Section leaders only see their own section's data. Admins see everything.</p>
+          <div class="add-form hidden" id="add-leader-form">
+            <h3>Add Leader Account</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">The leader must already have a Supabase account (created via Supabase → Authentication → Users). Enter their email exactly as registered.</p>
+            <div class="add-form-grid">
+              <div class="form-group"><label>Full Name</label><input type="text" id="lr-name" placeholder="e.g. Sarah Thornton"></div>
+              <div class="form-group"><label>Email Address</label><input type="email" id="lr-email" placeholder="e.g. sarah@scouts.org.uk"></div>
+              <div class="form-group"><label>Role</label><select id="lr-role"><option value="section_leader">Section Leader</option><option value="admin">Group Admin</option></select></div>
+              <div class="form-group"><label>Section Access</label><select id="lr-section"><option>All</option><option>Squirrels</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option></select></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveLeader()">Add Leader</button><button class="btn-secondary" onclick="toggleForm('add-leader-form')">Cancel</button></div>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Section Access</th><th>Actions</th></tr></thead>
+            <tbody id="leaders-admin-tbody"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody></table>
+          </div>
+          <div style="margin-top:20px;background:var(--purple-pale);border-radius:10px;padding:16px;">
+            <p style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:6px;">🔒 What section leaders can access:</p>
+            <p style="font-size:13px;color:var(--text-mid);">✅ Events (their section only) &nbsp;|&nbsp; ✅ News (their section only) &nbsp;|&nbsp; ✅ Members (their section only) &nbsp;|&nbsp; ✅ Join Requests (their section only)</p>
+            <p style="font-size:13px;color:var(--text-mid);margin-top:4px;">❌ Fundraising &nbsp;|&nbsp; ❌ Site Settings &nbsp;|&nbsp; ❌ Downloads &nbsp;|&nbsp; ❌ Gallery &nbsp;|&nbsp; ❌ Leaders &amp; Roles</p>
+          </div>
+        </div>
+
         <div class="admin-section" id="admin-settings-admin">
           <div class="admin-header"><h2>Site Settings</h2><button class="btn-primary" onclick="saveAllSettings()">💾 Save All Changes</button></div>
           <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">Changes save instantly and update the live website straight away.</p>
@@ -751,6 +778,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = null;
+let currentRole = null;
 let allEvents = [];
 const galleryBgs = ['linear-gradient(135deg,#C4A8F0,#9B77E0)','linear-gradient(135deg,#A8D4F0,#77AEE0)','linear-gradient(135deg,#F0C4A8,#E09B77)','linear-gradient(135deg,#A8F0C4,#77E0AE)','linear-gradient(135deg,#F0A8C4,#E07799)','linear-gradient(135deg,#C4F0A8,#99E077)'];
 
@@ -782,14 +810,26 @@ async function doLogin(){
   const {data,error}=await db.auth.signInWithPassword({email,password:pass});
   if(error){document.getElementById('login-error').style.display='block';return;}
   currentUser=data.user;
-  document.getElementById('admin-user-label').textContent='Logged in as: '+currentUser.email;
+  // Load role — first try by user_id, then by email (first login match)
+  let {data:roleData}=await db.from('leader_roles').select('*').eq('user_id',currentUser.id).single();
+  if(!roleData){
+    // Try matching by email and update user_id
+    const{data:emailMatch}=await db.from('leader_roles').select('*').eq('email',currentUser.email).single();
+    if(emailMatch){
+      await db.from('leader_roles').update({user_id:currentUser.id}).eq('email',currentUser.email);
+      roleData=emailMatch;
+    }
+  }
+  currentRole=roleData||{role:'section_leader',section:'All',name:currentUser.email};
+  document.getElementById('admin-user-label').textContent=(currentRole.name||email)+' — '+(currentRole.role==='admin'?'Group Admin':currentRole.section+' Leader');
   closeAdminLogin();
   showPage('admin');
+  applyRoleRestrictions();
   loadAllAdmin();
-  showNotif('Welcome back! ✓');
+  showNotif('Welcome back, '+(currentRole.name||'Leader')+'! ✓');
 }
 
-async function adminLogout(){await db.auth.signOut();currentUser=null;showPage('home');showNotif('Logged out successfully');}
+async function adminLogout(){await db.auth.signOut();currentUser=null;currentRole=null;showPage('home');showNotif('Logged out successfully');}
 
 function showAdminSection(id,el){
   document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
@@ -798,13 +838,72 @@ function showAdminSection(id,el){
   if(el)el.classList.add('active');
 }
 
-function loadAllAdmin(){loadAdminDashboard();loadAdminEvents();loadAdminNews();loadAdminGallery();loadAdminMembers();loadAdminDownloads();loadAdminFundraising();loadAdminJoins();loadAdminSettings();}
+function loadAllAdmin(){
+  loadAdminDashboard();
+  loadAdminEvents();
+  loadAdminNews();
+  loadAdminGallery();
+  loadAdminMembers();
+  loadAdminDownloads();
+  loadAdminFundraising();
+  loadAdminJoins();
+  loadAdminSettings();
+  if(currentRole&&currentRole.role==='admin') loadAdminLeaders();
+}
+
+function applyRoleRestrictions(){
+  const isAdmin=currentRole&&currentRole.role==='admin';
+  const restrictedItems=['fundraising-admin','settings-admin','gallery-admin','downloads-admin'];
+  restrictedItems.forEach(id=>{
+    const btn=document.querySelector(`button[onclick*="'${id}'"]`);
+    if(btn) btn.style.display=isAdmin?'':'none';
+  });
+  // Show leaders menu item only for admins
+  const leadersBtn=document.getElementById('leaders-nav-btn');
+  if(leadersBtn) leadersBtn.style.display=isAdmin?'':'none';
+  // Show section badge in sidebar
+  if(!isAdmin&&currentRole){
+    const badge=document.getElementById('role-badge');
+    if(badge){badge.textContent='🔒 '+currentRole.section+' only';badge.style.display='block';}
+  }
+}
 
 // ── SETTINGS ──
 let siteSettings = {};
 let logoFileToUpload = null;
 
-async function loadSiteSettings() {
+async function loadAdminLeaders(){
+  const{data}=await db.from('leader_roles').select('*').order('created_at',{ascending:true});
+  const tb=document.getElementById('leaders-admin-tbody');
+  if(!tb)return;
+  if(!data||data.length===0){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted);">No leaders yet</td></tr>';return;}
+  tb.innerHTML=data.map(l=>`<tr>
+    <td><strong>${l.name||'—'}</strong></td>
+    <td style="font-size:13px;color:var(--text-muted);">${l.email||''}</td>
+    <td><span class="tag" style="background:${l.role==='admin'?'var(--purple-pale)':'#E0F5EE'};color:${l.role==='admin'?'var(--purple-deep)':'#0A5438'};">${l.role==='admin'?'Group Admin':'Section Leader'}</span></td>
+    <td><span class="tag tag-${l.section==='All'?'all':l.section.toLowerCase()}">${l.section}</span></td>
+    <td><button class="action-btn delete" onclick="deleteRecord('leader_roles','${l.id}',this)">Remove</button></td>
+  </tr>`).join('');
+}
+
+async function saveLeader(){
+  const email=document.getElementById('lr-email').value.trim();
+  const name=document.getElementById('lr-name').value.trim();
+  const role=document.getElementById('lr-role').value;
+  const section=document.getElementById('lr-section').value;
+  if(!email||!name){showNotif('Please enter name and email');return;}
+  const{data:existing}=await db.from('leader_roles').select('*').eq('email',email);
+  if(existing&&existing.length>0){showNotif('This leader already has a role');return;}
+  // Try to match existing auth user by email
+  const{data:authMatch}=await db.from('leader_roles').select('user_id').eq('email',email).limit(1);
+  const{error}=await db.from('leader_roles').insert([{email,name,role,section}]);
+  if(error){showNotif('Error: '+error.message);return;}
+  showNotif('Leader added! ✓ They can now log in and their role will activate automatically.');
+  toggleForm('add-leader-form');
+  loadAdminLeaders();
+}
+
+
   const { data } = await db.from('settings').select('*');
   if (!data) return;
   data.forEach(row => { siteSettings[row.key] = row.value; });
@@ -1005,11 +1104,13 @@ async function loadDownloadsPage(){
 }
 
 async function loadAdminDashboard(){
+  const isAdmin=currentRole&&currentRole.role==='admin';
+  const sec=currentRole?currentRole.section:'All';
   const[members,events,joins,news]=await Promise.all([
-    db.from('members').select('id',{count:'exact',head:true}),
-    db.from('events').select('id',{count:'exact',head:true}),
-    db.from('join_requests').select('id',{count:'exact',head:true}).eq('status','Pending'),
-    db.from('news').select('id',{count:'exact',head:true})
+    isAdmin?db.from('members').select('id',{count:'exact',head:true}):db.from('members').select('id',{count:'exact',head:true}).eq('section',sec),
+    isAdmin?db.from('events').select('id',{count:'exact',head:true}):db.from('events').select('id',{count:'exact',head:true}).in('section',[sec,'All Sections']),
+    isAdmin?db.from('join_requests').select('id',{count:'exact',head:true}).eq('status','Pending'):db.from('join_requests').select('id',{count:'exact',head:true}).eq('status','Pending').ilike('section','%'+sec+'%'),
+    isAdmin?db.from('news').select('id',{count:'exact',head:true}):db.from('news').select('id',{count:'exact',head:true}).in('section',[sec,'Group News'])
   ]);
   document.getElementById('stat-members').textContent=members.count||0;
   document.getElementById('stat-events').textContent=events.count||0;
@@ -1022,7 +1123,10 @@ async function loadAdminDashboard(){
 }
 
 async function loadAdminEvents(){
-  const{data}=await db.from('events').select('*').order('created_at',{ascending:false});
+  const isAdmin=currentRole&&currentRole.role==='admin';
+  let query=db.from('events').select('*').order('created_at',{ascending:false});
+  if(!isAdmin&&currentRole) query=query.in('section',[currentRole.section,'All Sections']);
+  const{data}=await query;
   const tb=document.getElementById('events-admin-tbody');
   if(!data||data.length===0){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted);">No events yet</td></tr>';return;}
   tb.innerHTML=data.map(e=>`<tr><td>${e.date||''} ${e.month||''}</td><td>${e.title}</td><td><span class="tag ${tagClass(e.section)}">${e.section}</span></td><td>${e.location||''}</td><td>${e.cost||''}</td><td>${e.flyer_url?`<a href="${e.flyer_url}" target="_blank" style="color:var(--purple-mid);font-size:13px;font-weight:600;">📄 View</a>`:'—'}</td><td><button class="action-btn delete" onclick="deleteRecord('events','${e.id}',this)">Delete</button></td></tr>`).join('');
@@ -1060,7 +1164,10 @@ async function saveEvent() {
 }
 
 async function loadAdminNews(){
-  const{data}=await db.from('news').select('*').order('created_at',{ascending:false});
+  const isAdmin=currentRole&&currentRole.role==='admin';
+  let query=db.from('news').select('*').order('created_at',{ascending:false});
+  if(!isAdmin&&currentRole) query=query.in('section',[currentRole.section,'Group News']);
+  const{data}=await query;
   const tb=document.getElementById('news-admin-tbody');
   if(!data||data.length===0){tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted);">No articles yet</td></tr>';return;}
   tb.innerHTML=data.map(n=>`<tr><td>${n.date||''}</td><td>${n.title}</td><td><span class="tag ${tagClass(n.section)}">${n.section}</span></td><td><button class="action-btn delete" onclick="deleteRecord('news','${n.id}',this)">Delete</button></td></tr>`).join('');
@@ -1090,7 +1197,10 @@ async function saveGallery(){
 }
 
 async function loadAdminMembers(){
-  const{data}=await db.from('members').select('*').order('created_at',{ascending:false});
+  const isAdmin=currentRole&&currentRole.role==='admin';
+  let query=db.from('members').select('*').order('created_at',{ascending:false});
+  if(!isAdmin&&currentRole) query=query.eq('section',currentRole.section);
+  const{data}=await query;
   const tb=document.getElementById('members-admin-tbody');
   if(!data||data.length===0){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted);">No members yet</td></tr>';return;}
   tb.innerHTML=data.map(m=>`<tr><td>${m.child_name}</td><td><span class="tag ${tagClass(m.section)}">${m.section}</span></td><td>${m.age||''}</td><td>${m.parent_name||''}</td><td>${m.phone||''}</td><td><span class="tag" style="background:${m.status==='Active'?'#E0F5EE':'#FFF3DC'};color:${m.status==='Active'?'#0A5438':'#7A5500'};">${m.status}</span></td><td><button class="action-btn delete" onclick="deleteRecord('members','${m.id}',this)">Delete</button></td></tr>`).join('');
@@ -1135,7 +1245,10 @@ async function saveFundraising(){
 }
 
 async function loadAdminJoins(){
-  const{data}=await db.from('join_requests').select('*').order('created_at',{ascending:false});
+  const isAdmin=currentRole&&currentRole.role==='admin';
+  let query=db.from('join_requests').select('*').order('created_at',{ascending:false});
+  if(!isAdmin&&currentRole) query=query.ilike('section','%'+currentRole.section+'%');
+  const{data}=await query;
   const tb=document.getElementById('joins-admin-tbody');
   if(!data||data.length===0){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-muted);">No join requests yet</td></tr>';return;}
   tb.innerHTML=data.map(j=>`<tr><td>${j.child_name||''}</td><td><span class="tag ${tagClass(j.section)}">${j.section||''}</span></td><td>${j.parent_name||''}</td><td>${j.email||''}</td><td>${j.phone||''}</td><td style="font-size:12px;">${j.created_at?new Date(j.created_at).toLocaleDateString('en-GB'):''}</td><td><span class="tag" style="background:${j.status==='Pending'?'#FFF3DC':'#E0F5EE'};color:${j.status==='Pending'?'#7A5500':'#0A5438'};">${j.status}</span></td><td><button class="action-btn edit" onclick="updateJoinStatus('${j.id}','Accepted',this)">Accept</button><button class="action-btn delete" onclick="deleteRecord('join_requests','${j.id}',this)">Decline</button></td></tr>`).join('');
