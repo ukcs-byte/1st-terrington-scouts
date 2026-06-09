@@ -622,6 +622,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
         <button class="admin-nav-item" onclick="showAdminSection('downloads-admin',this)"><span>📁</span> Downloads</button>
         <button class="admin-nav-item" onclick="showAdminSection('fundraising-admin',this)"><span>💰</span> Fundraising</button>
         <button class="admin-nav-item" onclick="showAdminSection('joins-admin',this)"><span>📋</span> Join Requests</button>
+        <button class="admin-nav-item" onclick="showAdminSection('email-admin',this)"><span>✉️</span> Email</button>
         <button class="admin-nav-item" id="leaders-nav-btn" onclick="showAdminSection('leaders-admin',this)"><span>👤</span> Leaders &amp; Roles</button>
         <button class="admin-nav-item" onclick="showAdminSection('settings-admin',this)"><span>⚙️</span> Site Settings</button>
         <div id="role-badge" style="display:none;margin:12px 16px 0;font-size:11px;font-weight:700;color:var(--purple-mid);background:var(--purple-pale);padding:6px 12px;border-radius:20px;text-align:center;"></div>
@@ -751,6 +752,71 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
         <div class="admin-section" id="admin-joins-admin">
           <div class="admin-header"><h2>Join Requests</h2></div>
           <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Child</th><th>Section</th><th>Parent</th><th>Email</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="joins-admin-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table></div>
+        </div>
+
+        <div class="admin-section" id="admin-email-admin">
+          <div class="admin-header"><h2>Email</h2></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h3 style="font-size:16px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">✉️ Compose Email</h3>
+              <div class="form-group">
+                <label>From Name</label>
+                <input type="text" id="em-from-name" placeholder="e.g. 1st Terrington Scout Group">
+              </div>
+              <div class="form-group">
+                <label>Send To</label>
+                <select id="em-to-type" onchange="toggleEmailTo()">
+                  <option value="individual">Individual email address</option>
+                  <option value="section">Whole section</option>
+                  <option value="all">All members</option>
+                </select>
+              </div>
+              <div class="form-group" id="em-individual-wrap">
+                <label>Recipient Email</label>
+                <input type="email" id="em-to-email" placeholder="e.g. parent@email.com">
+              </div>
+              <div class="form-group hidden" id="em-section-wrap">
+                <label>Section</label>
+                <select id="em-to-section">
+                  <option>Squirrels</option>
+                  <option>Beavers</option>
+                  <option>Cubs</option>
+                  <option>Scouts</option>
+                  <option>Explorers</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="em-subject" placeholder="e.g. Important update from Scouts">
+              </div>
+              <div class="form-group">
+                <label>Message</label>
+                <textarea id="em-body" style="min-height:180px;" placeholder="Write your message here..."></textarea>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <button class="btn-primary" onclick="sendEmail()" id="em-send-btn">📨 Send Email</button>
+                <button class="btn-secondary" onclick="clearEmailForm()">Clear</button>
+              </div>
+              <p id="em-status" style="font-size:13px;margin-top:12px;color:var(--text-muted);"></p>
+            </div>
+
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <h3 style="font-size:16px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">📬 Sent Emails</h3>
+              <div id="sent-emails-list"><div class="loading">Loading...</div></div>
+            </div>
+
+          </div>
+
+          <div style="background:var(--purple-pale);border-radius:12px;padding:20px;margin-top:20px;">
+            <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:8px;font-size:14px;">⚙️ Email Settings</h4>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">All emails send from your domain via Resend. Make sure your Resend API key is set in the site file and your domain is verified at resend.com</p>
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+              <div style="font-size:13px;color:var(--text-mid);"><strong>From address:</strong> info@1st-terrington.co.uk</div>
+              <div style="font-size:13px;color:var(--text-mid);"><strong>Provider:</strong> Resend</div>
+              <button class="btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="testEmail()">Send Test Email</button>
+            </div>
+          </div>
         </div>
 
         <div class="admin-section" id="admin-leaders-admin">
@@ -975,6 +1041,7 @@ function showAdminSection(id,el){
   document.getElementById('admin-'+id).classList.add('active');
   document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
+  if(id==='email-admin') loadSentEmails();
   // Close sidebar on mobile
   const sb=document.querySelector('.admin-sidebar');
   if(sb&&sb.classList.contains('mobile-open')){toggleAdminSidebar();}
@@ -1439,6 +1506,11 @@ async function submitJoinForm(){
   const rec={child_name:firstname+' '+surname,dob:document.getElementById('j-dob').value,section:document.getElementById('j-section').value,parent_name:document.getElementById('j-parent').value,relationship:document.getElementById('j-rel').value,email:document.getElementById('j-email').value,phone:document.getElementById('j-phone').value,address:document.getElementById('j-address').value,notes:document.getElementById('j-notes').value,status:'Pending'};
   const{error}=await db.from('join_requests').insert([rec]);
   if(error){showNotif('Error submitting: '+error.message);return;}
+  // Send auto emails
+  try {
+    await sendJoinNotificationEmail(rec);
+    await sendJoinConfirmationEmail(rec);
+  } catch(e) { console.log('Email send error:', e); }
   document.getElementById('join-form-card').style.display='none';
   document.getElementById('join-success').style.display='block';
   showNotif('Registration submitted! 🎉');
@@ -1448,6 +1520,187 @@ async function deleteRecord(table,id,btn){
   const{error}=await db.from(table).delete().eq('id',id);
   if(error){showNotif('Error: '+error.message);return;}
   btn.closest('tr').remove();showNotif('Deleted ✓');loadAdminDashboard();
+}
+
+// ── EMAIL SYSTEM ──
+const RESEND_API_KEY = 're_435NcjTw_H1Z2g81nXhSDsn1gW5R87XgB';
+const FROM_EMAIL = 'info@1st-terrington.co.uk';
+const FROM_NAME_DEFAULT = '1st Terrington Scout Group';
+
+function toggleEmailTo() {
+  const type = document.getElementById('em-to-type').value;
+  document.getElementById('em-individual-wrap').classList.toggle('hidden', type !== 'individual');
+  document.getElementById('em-section-wrap').classList.toggle('hidden', type !== 'section');
+}
+
+function clearEmailForm() {
+  ['em-from-name','em-to-email','em-subject','em-body'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('em-status').textContent = '';
+}
+
+async function getEmailRecipients() {
+  const type = document.getElementById('em-to-type').value;
+  if (type === 'individual') {
+    const email = document.getElementById('em-to-email').value.trim();
+    return email ? [email] : [];
+  }
+  if (type === 'section') {
+    const section = document.getElementById('em-to-section').value;
+    const { data } = await db.from('members').select('email').eq('section', section).not('email','is',null);
+    return data ? data.map(m => m.email).filter(Boolean) : [];
+  }
+  if (type === 'all') {
+    const { data } = await db.from('members').select('email').not('email','is',null);
+    return data ? data.map(m => m.email).filter(Boolean) : [];
+  }
+  return [];
+}
+
+async function sendEmailViaResend(to, subject, body, fromName) {
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + RESEND_API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: (fromName || FROM_NAME_DEFAULT) + ' <' + FROM_EMAIL + '>',
+      to: Array.isArray(to) ? to : [to],
+      subject: subject,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+        <div style="background:#3C2A6B;padding:24px;border-radius:8px 8px 0 0;text-align:center;">
+          <h1 style="color:#F0A500;font-size:20px;margin:0;">1st Terrington Scout Group</h1>
+        </div>
+        <div style="background:#F6F2FD;padding:32px;border-radius:0 0 8px 8px;">
+          <div style="background:white;padding:24px;border-radius:8px;line-height:1.7;color:#1A1128;">
+            ${body.replace(/\n/g,'<br>')}
+          </div>
+          <p style="font-size:12px;color:#8B7BA8;margin-top:20px;text-align:center;">
+            1st Terrington Scout Group · 1st-terrington.co.uk<br>
+            This email was sent from our group website.
+          </p>
+        </div>
+      </div>`
+    })
+  });
+  return response.ok;
+}
+
+async function sendEmail() {
+  const fromName = document.getElementById('em-from-name').value || FROM_NAME_DEFAULT;
+  const subject = document.getElementById('em-subject').value.trim();
+  const body = document.getElementById('em-body').value.trim();
+  const statusEl = document.getElementById('em-status');
+  const sendBtn = document.getElementById('em-send-btn');
+
+  if (!subject) { statusEl.textContent = '⚠ Please enter a subject'; return; }
+  if (!body) { statusEl.textContent = '⚠ Please write a message'; return; }
+
+  const recipients = await getEmailRecipients();
+  if (recipients.length === 0) { statusEl.textContent = '⚠ No recipients found — check email addresses in Members'; return; }
+
+  sendBtn.textContent = '⏳ Sending...';
+  sendBtn.disabled = true;
+  statusEl.textContent = '';
+
+  const toType = document.getElementById('em-to-type').value;
+  const section = toType === 'section' ? document.getElementById('em-to-section').value : toType === 'all' ? 'All Members' : recipients[0];
+
+  try {
+    const ok = await sendEmailViaResend(recipients, subject, body, fromName);
+    if (ok) {
+      // Save to sent log
+      await db.from('emails').insert([{
+        from_name: fromName,
+        to_email: recipients.join(', '),
+        subject,
+        body,
+        section,
+        status: 'sent'
+      }]);
+      statusEl.style.color = '#0A5438';
+      statusEl.textContent = `✓ Sent to ${recipients.length} recipient${recipients.length>1?'s':''}!`;
+      showNotif('Email sent! ✓');
+      clearEmailForm();
+      loadSentEmails();
+    } else {
+      statusEl.style.color = '#C00';
+      statusEl.textContent = '✕ Send failed — check your Resend API key and domain verification';
+    }
+  } catch(e) {
+    statusEl.style.color = '#C00';
+    statusEl.textContent = '✕ Error: ' + e.message;
+  }
+
+  sendBtn.textContent = '📨 Send Email';
+  sendBtn.disabled = false;
+}
+
+async function testEmail() {
+  if (!currentUser) return;
+  const statusEl = document.getElementById('em-status');
+  showNotif('Sending test email...');
+  const ok = await sendEmailViaResend(currentUser.email, 'Test Email — 1st Terrington', 'This is a test email from your Scout group website. If you can read this, your email system is working correctly! 🎉', '1st Terrington Scout Group');
+  if (ok) {
+    showNotif('Test email sent to ' + currentUser.email + ' ✓');
+  } else {
+    showNotif('Test failed — check API key and domain');
+  }
+}
+
+async function loadSentEmails() {
+  const isAdmin = currentRole && currentRole.role === 'admin';
+  let query = db.from('emails').select('*').order('created_at', { ascending: false }).limit(20);
+  if (!isAdmin && currentRole) query = query.eq('section', currentRole.section);
+  const { data } = await query;
+  const el = document.getElementById('sent-emails-list');
+  if (!el) return;
+  if (!data || data.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:8px;">📭</div><p>No emails sent yet</p></div>';
+    return;
+  }
+  el.innerHTML = data.map(e => `
+    <div style="border-bottom:1px solid var(--border);padding:12px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div>
+          <p style="font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:2px;">${e.subject}</p>
+          <p style="font-size:12px;color:var(--text-muted);">To: ${e.to_email.length > 40 ? e.to_email.substring(0,40)+'...' : e.to_email}</p>
+          <p style="font-size:12px;color:var(--text-muted);">${e.created_at ? new Date(e.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</p>
+        </div>
+        <span class="tag" style="background:#E0F5EE;color:#0A5438;white-space:nowrap;">✓ Sent</span>
+      </div>
+    </div>`).join('');
+}
+
+async function sendJoinNotificationEmail(joinData) {
+  // Auto-email when a join request comes in
+  const sectionEmails = {
+    'Squirrels (4–6)': 'squirrels@1st-terrington.co.uk',
+    'Beavers (5½–8)': 'beavers@1st-terrington.co.uk',
+    'Cubs (8–10½)': 'cubs@1st-terrington.co.uk',
+    'Scouts (10½–14)': 'scouts@1st-terrington.co.uk',
+    'Explorers (14–18)': 'explorers@1st-terrington.co.uk'
+  };
+  const leaderEmail = sectionEmails[joinData.section] || FROM_EMAIL;
+  const body = `New join request received on the website:\n\nChild: ${joinData.child_name}\nSection: ${joinData.section}\nDate of Birth: ${joinData.dob}\n\nParent/Guardian: ${joinData.parent_name}\nRelationship: ${joinData.relationship}\nEmail: ${joinData.email}\nPhone: ${joinData.phone}\nAddress: ${joinData.address}\n\nAdditional notes: ${joinData.notes||'None'}\n\nPlease log into the admin area to accept or decline this request.`;
+  await sendEmailViaResend(
+    [leaderEmail, FROM_EMAIL],
+    'New Join Request — ' + joinData.child_name + ' (' + joinData.section + ')',
+    body,
+    '1st Terrington Website'
+  );
+}
+
+async function sendJoinConfirmationEmail(joinData) {
+  // Auto-email to the parent confirming receipt
+  if (!joinData.email) return;
+  const body = `Dear ${joinData.parent_name},\n\nThank you for registering ${joinData.child_name} for ${joinData.section} at 1st Terrington Scout Group!\n\nWe've received your registration and a section leader will be in touch within 48 hours to arrange a taster session.\n\nIf you have any questions in the meantime, please don't hesitate to get in touch.\n\nWarm regards,\n1st Terrington Scout Group`;
+  await sendEmailViaResend(
+    joinData.email,
+    'Registration Received — Welcome to 1st Terrington Scouts! 🎉',
+    body,
+    '1st Terrington Scout Group'
+  );
 }
 
 window.addEventListener('load',()=>{loadHomeEvents();loadHomeNews();loadSiteSettings();});
