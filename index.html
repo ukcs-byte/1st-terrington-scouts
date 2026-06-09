@@ -528,9 +528,17 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
               <div class="form-group"><label>Cost</label><input type="text" id="ev-cost" placeholder="e.g. £10 or Free"></div>
               <div class="form-group" style="grid-column:span 2"><label>Description</label><input type="text" id="ev-desc" placeholder="Event details"></div>
             </div>
+            <div class="form-group">
+              <label>Event Flyer (optional)</label>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+                <input type="file" id="ev-flyer-input" accept="image/*,application/pdf" style="display:none;" onchange="previewFlyer(this)">
+                <button type="button" class="btn-secondary" style="font-size:13px;padding:8px 16px;" onclick="document.getElementById('ev-flyer-input').click()">📁 Choose Flyer</button>
+                <span id="ev-flyer-name" style="font-size:13px;color:var(--text-muted);">No file chosen</span>
+              </div>
+            </div>
             <div style="display:flex;gap:12px;margin-top:8px;"><button class="btn-primary" onclick="saveEvent()">Save Event</button><button class="btn-secondary" onclick="toggleForm('add-event-form')">Cancel</button></div>
           </div>
-          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Event</th><th>Section</th><th>Location</th><th>Cost</th><th>Actions</th></tr></thead><tbody id="events-admin-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table></div>
+          <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Event</th><th>Section</th><th>Location</th><th>Cost</th><th>Flyer</th><th>Actions</th></tr></thead><tbody id="events-admin-tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table></div>
         </div>
 
         <div class="admin-section" id="admin-news-admin">
@@ -938,7 +946,7 @@ async function saveAllSettings() {
   await loadSiteSettings();
 }
 
-function eventCardHTML(e){return`<div class="event-card"><div class="event-date"><div class="day">${e.date||'—'}</div><div class="month">${e.month||''}</div></div><div class="event-info"><h3>${e.title}</h3><p>${e.description||''}</p><div class="event-meta"><span class="tag ${tagClass(e.section)}">${e.section||'All'}</span><span>📍 ${e.location||''}</span><span>🕐 ${e.time||''}</span></div></div><div style="text-align:right"><span style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">${e.cost||''}</span></div></div>`;}
+function eventCardHTML(e){return`<div class="event-card"><div class="event-date"><div class="day">${e.date||'—'}</div><div class="month">${e.month||''}</div></div><div class="event-info"><h3>${e.title}</h3><p>${e.description||''}</p><div class="event-meta"><span class="tag ${tagClass(e.section)}">${e.section||'All'}</span><span>📍 ${e.location||''}</span><span>🕐 ${e.time||''}</span></div></div><div style="text-align:right;display:flex;flex-direction:column;gap:8px;align-items:flex-end;"><span style="font-size:12px;color:var(--text-muted);">${e.cost||''}</span>${e.flyer_url?`<a href="${e.flyer_url}" target="_blank" class="btn-primary" style="font-size:12px;padding:7px 14px;text-decoration:none;">📄 View Flyer</a>`:''}</div></div>`;}
 
 async function loadHomeEvents(){
   const{data}=await db.from('events').select('*').order('created_at',{ascending:true}).limit(3);
@@ -1017,15 +1025,38 @@ async function loadAdminEvents(){
   const{data}=await db.from('events').select('*').order('created_at',{ascending:false});
   const tb=document.getElementById('events-admin-tbody');
   if(!data||data.length===0){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted);">No events yet</td></tr>';return;}
-  tb.innerHTML=data.map(e=>`<tr><td>${e.date||''} ${e.month||''}</td><td>${e.title}</td><td><span class="tag ${tagClass(e.section)}">${e.section}</span></td><td>${e.location||''}</td><td>${e.cost||''}</td><td><button class="action-btn delete" onclick="deleteRecord('events','${e.id}',this)">Delete</button></td></tr>`).join('');
+  tb.innerHTML=data.map(e=>`<tr><td>${e.date||''} ${e.month||''}</td><td>${e.title}</td><td><span class="tag ${tagClass(e.section)}">${e.section}</span></td><td>${e.location||''}</td><td>${e.cost||''}</td><td>${e.flyer_url?`<a href="${e.flyer_url}" target="_blank" style="color:var(--purple-mid);font-size:13px;font-weight:600;">📄 View</a>`:'—'}</td><td><button class="action-btn delete" onclick="deleteRecord('events','${e.id}',this)">Delete</button></td></tr>`).join('');
 }
 
-async function saveEvent(){
-  const rec={title:document.getElementById('ev-title').value,date:document.getElementById('ev-day').value,month:document.getElementById('ev-month').value,section:document.getElementById('ev-section').value,location:document.getElementById('ev-location').value,time:document.getElementById('ev-time').value,cost:document.getElementById('ev-cost').value,description:document.getElementById('ev-desc').value};
-  if(!rec.title){showNotif('Please enter a title');return;}
-  const{error}=await db.from('events').insert([rec]);
-  if(error){showNotif('Error: '+error.message);return;}
-  showNotif('Event saved! ✓');toggleForm('add-event-form');loadAdminEvents();loadHomeEvents();
+let flyerFileToUpload = null;
+
+function previewFlyer(input) {
+  const file = input.files[0];
+  if (!file) return;
+  flyerFileToUpload = file;
+  document.getElementById('ev-flyer-name').textContent = file.name;
+}
+
+async function saveEvent() {
+  const title = document.getElementById('ev-title').value;
+  if (!title) { showNotif('Please enter a title'); return; }
+  let flyer_url = '';
+  if (flyerFileToUpload) {
+    showNotif('Uploading flyer...');
+    const ext = flyerFileToUpload.name.split('.').pop();
+    const filename = 'flyer-' + Date.now() + '.' + ext;
+    const { error: upErr } = await db.storage.from('flyers').upload(filename, flyerFileToUpload, { contentType: flyerFileToUpload.type });
+    if (upErr) { showNotif('Flyer upload failed: ' + upErr.message); return; }
+    const { data: urlData } = db.storage.from('flyers').getPublicUrl(filename);
+    flyer_url = urlData.publicUrl;
+    flyerFileToUpload = null;
+    document.getElementById('ev-flyer-name').textContent = 'No file chosen';
+    document.getElementById('ev-flyer-input').value = '';
+  }
+  const rec = { title, date: document.getElementById('ev-day').value, month: document.getElementById('ev-month').value, section: document.getElementById('ev-section').value, location: document.getElementById('ev-location').value, time: document.getElementById('ev-time').value, cost: document.getElementById('ev-cost').value, description: document.getElementById('ev-desc').value, flyer_url };
+  const { error } = await db.from('events').insert([rec]);
+  if (error) { showNotif('Error: ' + error.message); return; }
+  showNotif('Event saved! ✓'); toggleForm('add-event-form'); loadAdminEvents(); loadHomeEvents();
 }
 
 async function loadAdminNews(){
