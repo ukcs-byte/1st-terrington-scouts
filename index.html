@@ -194,7 +194,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
 
 <div id="topbar">
   <div class="container">
-    <span>📍 Terrington, North Yorkshire &nbsp;|&nbsp; Est. <span id="site-founded">1923</span></span>
+    <span>📍 <span id="site-location-tagline">Terrington, North Yorkshire</span> &nbsp;|&nbsp; Est. <span id="site-founded">1923</span></span>
     <span><a id="site-phone-link" href="tel:01653648200">📞 <span id="site-phone">01653 648200</span></a> &nbsp;|&nbsp; <a id="site-email-link" href="mailto:info@1stterringtonscouts.org.uk">✉ <span id="site-email">info@1stterringtonscouts.org.uk</span></a></span>
   </div>
 </div>
@@ -618,6 +618,7 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
             <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
               <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:16px;font-size:16px;">📋 Group Details</h4>
               <div class="form-group"><label>Group Name</label><input type="text" id="s-group_name" placeholder="e.g. 1st Terrington Scout Group"></div>
+              <div class="form-group"><label>Location Tagline</label><input type="text" id="s-location_tagline" placeholder="e.g. Terrington, North Yorkshire"></div>
               <div class="form-group"><label>Phone Number</label><input type="text" id="s-phone" placeholder="e.g. 01653 648200"></div>
               <div class="form-group"><label>Email Address</label><input type="email" id="s-email" placeholder="e.g. info@scouts.org.uk"></div>
               <div class="form-group"><label>Address</label><input type="text" id="s-address" placeholder="e.g. Church Lane, Terrington"></div>
@@ -767,6 +768,7 @@ function applySettingsToSite() {
   if (s.phone) { document.getElementById('site-phone').textContent = s.phone; document.getElementById('site-phone-link').href = 'tel:' + s.phone.replace(/\s/g,''); }
   if (s.email) { document.getElementById('site-email').textContent = s.email; document.getElementById('site-email-link').href = 'mailto:' + s.email; }
   if (s.founded) document.getElementById('site-founded').textContent = s.founded;
+  if (s.location_tagline) document.getElementById('site-location-tagline').textContent = s.location_tagline;
   if (s.group_name) document.getElementById('site-group-name').textContent = s.group_name;
   if (s.hero_title) document.getElementById('site-hero-title').textContent = s.hero_title;
   if (s.hero_desc) document.getElementById('site-hero-desc').textContent = s.hero_desc;
@@ -876,7 +878,7 @@ async function loadAdminSettings() {
 }
 
 async function saveAllSettings() {
-  const keys = ['group_name','phone','email','address','founded','charity_number','hero_title','hero_desc','fundraising_raised','fundraising_goal','squirrel_leader','squirrel_day','squirrel_location','beaver_leader','beaver_day','beaver_location','cub_leader','cub_day','cub_location','scout_leader','scout_day','scout_location','explorer_leader','explorer_day','explorer_location'];
+  const keys = ['group_name','location_tagline','phone','email','address','founded','charity_number','hero_title','hero_desc','fundraising_raised','fundraising_goal','squirrel_leader','squirrel_day','squirrel_location','beaver_leader','beaver_day','beaver_location','cub_leader','cub_day','cub_location','scout_leader','scout_day','scout_location','explorer_leader','explorer_day','explorer_location'];
   const updates = keys.map(key => {
     const el = document.getElementById('s-' + key);
     return el ? db.from('settings').upsert({ key, value: el.value }, { onConflict: 'key' }) : Promise.resolve();
