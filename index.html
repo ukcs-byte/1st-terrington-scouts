@@ -188,6 +188,17 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
 .notif.show{transform:translateY(0);opacity:1;}
 .loading{text-align:center;padding:40px;color:var(--text-muted);font-size:15px;}
 .empty-state{text-align:center;padding:48px;color:var(--text-muted);}
+.mail-folder-btn{display:flex;align-items:center;gap:8px;width:100%;padding:10px 16px;background:none;border:none;font-family:Inter,sans-serif;font-size:13px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all 0.15s;text-align:left;}
+.mail-folder-btn:hover{background:var(--purple-pale);color:var(--purple-mid);}
+.mail-folder-btn.active{background:var(--purple-mid);color:white;font-weight:600;}
+.mail-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;}
+.mail-item:hover{background:var(--purple-ultra);}
+.mail-item.unread{background:#FAFAFE;}
+.mail-item.unread .mail-sender{font-weight:700;}
+.mail-sender{font-size:14px;color:var(--text-dark);margin-bottom:2px;}
+.mail-subject{font-size:13px;color:var(--text-mid);margin-bottom:2px;}
+.mail-preview{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px;}
+.mail-time{font-size:11px;color:var(--text-muted);white-space:nowrap;margin-left:auto;}
 
 /* ── MOBILE HAMBURGER ── */
 .mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px;}
@@ -755,66 +766,125 @@ footer{background:var(--purple-deep);color:white;padding:60px 0 24px;}
         </div>
 
         <div class="admin-section" id="admin-email-admin">
-          <div class="admin-header"><h2>Email</h2></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-
-            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
-              <h3 style="font-size:16px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">✉️ Compose Email</h3>
-              <div class="form-group">
-                <label>From Name</label>
-                <input type="text" id="em-from-name" placeholder="e.g. 1st Terrington Scout Group">
-              </div>
-              <div class="form-group">
-                <label>Send To</label>
-                <select id="em-to-type" onchange="toggleEmailTo()">
-                  <option value="individual">Individual email address</option>
-                  <option value="section">Whole section</option>
-                  <option value="all">All members</option>
-                </select>
-              </div>
-              <div class="form-group" id="em-individual-wrap">
-                <label>Recipient Email</label>
-                <input type="email" id="em-to-email" placeholder="e.g. parent@email.com">
-              </div>
-              <div class="form-group hidden" id="em-section-wrap">
-                <label>Section</label>
-                <select id="em-to-section">
-                  <option>Squirrels</option>
-                  <option>Beavers</option>
-                  <option>Cubs</option>
-                  <option>Scouts</option>
-                  <option>Explorers</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Subject</label>
-                <input type="text" id="em-subject" placeholder="e.g. Important update from Scouts">
-              </div>
-              <div class="form-group">
-                <label>Message</label>
-                <textarea id="em-body" style="min-height:180px;" placeholder="Write your message here..."></textarea>
-              </div>
-              <div style="display:flex;gap:10px;">
-                <button class="btn-primary" onclick="sendEmail()" id="em-send-btn">📨 Send Email</button>
-                <button class="btn-secondary" onclick="clearEmailForm()">Clear</button>
-              </div>
-              <p id="em-status" style="font-size:13px;margin-top:12px;color:var(--text-muted);"></p>
-            </div>
-
-            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:24px;">
-              <h3 style="font-size:16px;font-weight:700;color:var(--purple-deep);margin-bottom:16px;">📬 Sent Emails</h3>
-              <div id="sent-emails-list"><div class="loading">Loading...</div></div>
-            </div>
-
+          <div class="admin-header">
+            <h2>📬 Webmail</h2>
+            <button class="btn-primary" onclick="showMailView('compose')">✏️ Compose</button>
           </div>
 
-          <div style="background:var(--purple-pale);border-radius:12px;padding:20px;margin-top:20px;">
-            <h4 style="font-weight:700;color:var(--purple-deep);margin-bottom:8px;font-size:14px;">⚙️ Email Settings</h4>
-            <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">All emails send from your domain via Resend. Make sure your Resend API key is set in the site file and your domain is verified at resend.com</p>
-            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-              <div style="font-size:13px;color:var(--text-mid);"><strong>From address:</strong> info@1st-terrington.co.uk</div>
-              <div style="font-size:13px;color:var(--text-mid);"><strong>Provider:</strong> Resend</div>
-              <button class="btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="testEmail()">Send Test Email</button>
+          <div style="display:grid;grid-template-columns:200px 1fr;gap:0;background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;min-height:600px;">
+
+            <!-- MAIL SIDEBAR -->
+            <div style="border-right:1px solid var(--border);background:var(--purple-ultra);">
+              <!-- Mailbox selector -->
+              <div style="padding:16px;border-bottom:1px solid var(--border);">
+                <label style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Mailbox</label>
+                <select id="mail-mailbox-select" onchange="switchMailbox()" style="width:100%;margin-top:6px;padding:8px;border:1px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:13px;background:white;">
+                  <option value="info@1st-terrington.co.uk">📬 Group Inbox</option>
+                  <option value="squirrels@1st-terrington.co.uk">🐿️ Squirrels</option>
+                  <option value="beavers@1st-terrington.co.uk">🦫 Beavers</option>
+                  <option value="cubs@1st-terrington.co.uk">🐯 Cubs</option>
+                  <option value="scouts@1st-terrington.co.uk">⚜️ Scouts</option>
+                  <option value="explorers@1st-terrington.co.uk">🧭 Explorers</option>
+                  <option value="join@1st-terrington.co.uk">✋ Join Requests</option>
+                </select>
+              </div>
+              <!-- Folders -->
+              <div style="padding:8px 0;">
+                <button class="mail-folder-btn active" onclick="loadFolder('inbox',this)" id="folder-inbox">
+                  <span>📥</span> Inbox <span id="inbox-count" style="margin-left:auto;background:var(--purple-mid);color:white;border-radius:10px;padding:1px 7px;font-size:11px;"></span>
+                </button>
+                <button class="mail-folder-btn" onclick="loadFolder('sent',this)" id="folder-sent"><span>📤</span> Sent</button>
+                <button class="mail-folder-btn" onclick="loadFolder('drafts',this)" id="folder-drafts"><span>📝</span> Drafts</button>
+                <button class="mail-folder-btn" onclick="loadFolder('trash',this)" id="folder-trash"><span>🗑️</span> Trash</button>
+              </div>
+              <!-- Test email -->
+              <div style="padding:12px 16px;border-top:1px solid var(--border);margin-top:auto;">
+                <button class="btn-secondary" style="font-size:11px;padding:6px 10px;width:100%;" onclick="testEmail()">🧪 Send Test</button>
+              </div>
+            </div>
+
+            <!-- MAIL MAIN -->
+            <div style="display:flex;flex-direction:column;">
+
+              <!-- EMAIL LIST VIEW -->
+              <div id="mail-list-view" style="flex:1;">
+                <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+                  <span id="mail-folder-title" style="font-weight:600;color:var(--purple-deep);font-size:15px;">Inbox</span>
+                  <span id="mail-email-address" style="font-size:12px;color:var(--text-muted);"></span>
+                  <button onclick="loadCurrentFolder()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:18px;" title="Refresh">↻</button>
+                </div>
+                <div id="mail-list" style="overflow-y:auto;max-height:540px;">
+                  <div class="loading">Loading emails...</div>
+                </div>
+              </div>
+
+              <!-- EMAIL DETAIL VIEW -->
+              <div id="mail-detail-view" style="display:none;flex:1;flex-direction:column;">
+                <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+                  <button onclick="backToList()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--purple-mid);">←</button>
+                  <span style="font-weight:600;color:var(--purple-deep);font-size:15px;" id="detail-subject">Subject</span>
+                  <div style="margin-left:auto;display:flex;gap:8px;">
+                    <button class="action-btn edit" onclick="replyToEmail()">↩ Reply</button>
+                    <button class="action-btn delete" onclick="trashEmail()">🗑 Delete</button>
+                  </div>
+                </div>
+                <div style="padding:20px;overflow-y:auto;max-height:500px;">
+                  <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+                    <p style="font-size:14px;font-weight:600;color:var(--text-dark);" id="detail-from"></p>
+                    <p style="font-size:12px;color:var(--text-muted);" id="detail-date"></p>
+                    <p style="font-size:12px;color:var(--text-muted);" id="detail-to"></p>
+                  </div>
+                  <div id="detail-body" style="font-size:14px;line-height:1.8;color:var(--text-dark);"></div>
+                </div>
+              </div>
+
+              <!-- COMPOSE VIEW -->
+              <div id="mail-compose-view" style="display:none;flex:1;flex-direction:column;">
+                <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+                  <button onclick="backToList()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--purple-mid);">←</button>
+                  <span style="font-weight:600;color:var(--purple-deep);">New Email</span>
+                </div>
+                <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:12px;">
+                  <div class="form-group" style="margin:0;">
+                    <label>From</label>
+                    <select id="compose-from" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:14px;width:100%;">
+                      <option value="info@1st-terrington.co.uk">Group Inbox &lt;info@1st-terrington.co.uk&gt;</option>
+                      <option value="squirrels@1st-terrington.co.uk">Squirrels &lt;squirrels@1st-terrington.co.uk&gt;</option>
+                      <option value="beavers@1st-terrington.co.uk">Beavers &lt;beavers@1st-terrington.co.uk&gt;</option>
+                      <option value="cubs@1st-terrington.co.uk">Cubs &lt;cubs@1st-terrington.co.uk&gt;</option>
+                      <option value="scouts@1st-terrington.co.uk">Scouts &lt;scouts@1st-terrington.co.uk&gt;</option>
+                      <option value="explorers@1st-terrington.co.uk">Explorers &lt;explorers@1st-terrington.co.uk&gt;</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="margin:0;">
+                    <label>Send To</label>
+                    <select id="compose-to-type" onchange="toggleComposeTo()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:14px;width:100%;margin-bottom:8px;">
+                      <option value="individual">Individual email address</option>
+                      <option value="section">Whole section</option>
+                      <option value="all">All members</option>
+                    </select>
+                    <input type="email" id="compose-to-email" placeholder="recipient@email.com">
+                    <select id="compose-to-section" class="hidden" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:14px;width:100%;margin-top:8px;">
+                      <option>Squirrels</option><option>Beavers</option><option>Cubs</option><option>Scouts</option><option>Explorers</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="margin:0;">
+                    <label>Subject</label>
+                    <input type="text" id="compose-subject" placeholder="Email subject">
+                  </div>
+                  <div class="form-group" style="margin:0;flex:1;">
+                    <label>Message</label>
+                    <textarea id="compose-body" style="min-height:220px;width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:14px;resize:vertical;" placeholder="Write your message here..."></textarea>
+                  </div>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <button class="btn-primary" onclick="sendComposedEmail()" id="compose-send-btn">📨 Send</button>
+                    <button class="btn-secondary" onclick="saveDraft()">💾 Save Draft</button>
+                    <button class="btn-secondary" onclick="backToList()">Cancel</button>
+                    <span id="compose-status" style="font-size:13px;color:var(--text-muted);"></span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -1031,6 +1101,13 @@ async function doLogin(){
   showPage('admin');
   applyRoleRestrictions();
   loadAllAdmin();
+  // Set default mailbox based on section
+  const sectionMailboxes = {'Squirrels':'squirrels@1st-terrington.co.uk','Beavers':'beavers@1st-terrington.co.uk','Cubs':'cubs@1st-terrington.co.uk','Scouts':'scouts@1st-terrington.co.uk','Explorers':'explorers@1st-terrington.co.uk'};
+  if(currentRole&&currentRole.section&&sectionMailboxes[currentRole.section]){
+    currentMailbox=sectionMailboxes[currentRole.section];
+    const sel=document.getElementById('mail-mailbox-select');
+    if(sel)sel.value=currentMailbox;
+  }
   showNotif('Welcome back, '+(currentRole.name||'Leader')+'! ✓');
 }
 
@@ -1041,7 +1118,9 @@ function showAdminSection(id,el){
   document.getElementById('admin-'+id).classList.add('active');
   document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
-  if(id==='email-admin') loadSentEmails();
+  if(id==='email-admin'){
+    switchMailbox();
+  }
   // Close sidebar on mobile
   const sb=document.querySelector('.admin-sidebar');
   if(sb&&sb.classList.contains('mobile-open')){toggleAdminSidebar();}
@@ -1526,36 +1605,13 @@ async function deleteRecord(table,id,btn){
 const FROM_EMAIL = 'info@1st-terrington.co.uk';
 const FROM_NAME_DEFAULT = '1st Terrington Scout Group';
 
-function toggleEmailTo() {
-  const type = document.getElementById('em-to-type').value;
-  document.getElementById('em-individual-wrap').classList.toggle('hidden', type !== 'individual');
-  document.getElementById('em-section-wrap').classList.toggle('hidden', type !== 'section');
-}
+// ── WEBMAIL STATE ──
+let currentMailbox = 'info@1st-terrington.co.uk';
+let currentFolder = 'inbox';
+let currentEmailId = null;
+let replyToData = null;
 
-function clearEmailForm() {
-  ['em-from-name','em-to-email','em-subject','em-body'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('em-status').textContent = '';
-}
-
-async function getEmailRecipients() {
-  const type = document.getElementById('em-to-type').value;
-  if (type === 'individual') {
-    const email = document.getElementById('em-to-email').value.trim();
-    return email ? [email] : [];
-  }
-  if (type === 'section') {
-    const section = document.getElementById('em-to-section').value;
-    const { data } = await db.from('members').select('email').eq('section', section).not('email','is',null);
-    return data ? data.map(m => m.email).filter(Boolean) : [];
-  }
-  if (type === 'all') {
-    const { data } = await db.from('members').select('email').not('email','is',null);
-    return data ? data.map(m => m.email).filter(Boolean) : [];
-  }
-  return [];
-}
-
-async function sendEmailViaResend(to, subject, body, fromName) {
+async function sendEmailViaResend(to, subject, body, fromName, fromEmail) {
   const html = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
     <div style="background:#3C2A6B;padding:24px;border-radius:8px 8px 0 0;text-align:center;">
       <h1 style="color:#F0A500;font-size:20px;margin:0;">1st Terrington Scout Group</h1>
@@ -1565,134 +1621,248 @@ async function sendEmailViaResend(to, subject, body, fromName) {
         ${body.replace(/\n/g,'<br>')}
       </div>
       <p style="font-size:12px;color:#8B7BA8;margin-top:20px;text-align:center;">
-        1st Terrington Scout Group · 1st-terrington.co.uk<br>
-        This email was sent from our group website.
+        1st Terrington Scout Group · 1st-terrington.co.uk
       </p>
     </div>
   </div>`;
   const { error } = await db.functions.invoke('send-email', {
-    body: {
-      to: Array.isArray(to) ? to : [to],
-      subject,
-      html,
-      fromName: fromName || FROM_NAME_DEFAULT
-    }
+    body: { to: Array.isArray(to)?to:[to], subject, html, fromName: fromName||FROM_NAME_DEFAULT, fromEmail: fromEmail||FROM_EMAIL }
   });
   if (error) throw new Error(error.message);
   return true;
 }
 
-async function sendEmail() {
-  const fromName = document.getElementById('em-from-name').value || FROM_NAME_DEFAULT;
-  const subject = document.getElementById('em-subject').value.trim();
-  const body = document.getElementById('em-body').value.trim();
-  const statusEl = document.getElementById('em-status');
-  const sendBtn = document.getElementById('em-send-btn');
-
-  if (!subject) { statusEl.textContent = '⚠ Please enter a subject'; return; }
-  if (!body) { statusEl.textContent = '⚠ Please write a message'; return; }
-
-  const recipients = await getEmailRecipients();
-  if (recipients.length === 0) { statusEl.textContent = '⚠ No recipients found — check email addresses in Members'; return; }
-
-  sendBtn.textContent = '⏳ Sending...';
-  sendBtn.disabled = true;
-  statusEl.textContent = '';
-
-  const toType = document.getElementById('em-to-type').value;
-  const section = toType === 'section' ? document.getElementById('em-to-section').value : toType === 'all' ? 'All Members' : recipients[0];
-
-  try {
-    await sendEmailViaResend(recipients, subject, body, fromName);
-    // Save to sent log
-    await db.from('emails').insert([{
-      from_name: fromName,
-      to_email: recipients.join(', '),
-      subject,
-      body,
-      section,
-      status: 'sent'
-    }]);
-    statusEl.style.color = '#0A5438';
-    statusEl.textContent = `✓ Sent to ${recipients.length} recipient${recipients.length>1?'s':''}!`;
-    showNotif('Email sent! ✓');
-    clearEmailForm();
-    loadSentEmails();
-  } catch(e) {
-    statusEl.style.color = '#C00';
-    statusEl.textContent = '✕ Error: ' + e.message;
-  }
-
-  sendBtn.textContent = '📨 Send Email';
-  sendBtn.disabled = false;
-}
-
-async function testEmail() {
-  if (!currentUser) return;
-  const statusEl = document.getElementById('em-status');
-  showNotif('Sending test email...');
-  try {
-    await sendEmailViaResend(currentUser.email, 'Test Email — 1st Terrington', 'This is a test email from your Scout group website. If you can read this, your email system is working correctly! 🎉', '1st Terrington Scout Group');
-    showNotif('Test email sent to ' + currentUser.email + ' ✓');
-  } catch(e) {
-    showNotif('Test failed: ' + e.message);
+// ── WEBMAIL FUNCTIONS ──
+function showMailView(view) {
+  document.getElementById('mail-list-view').style.display = view==='list'?'block':'none';
+  document.getElementById('mail-detail-view').style.display = view==='detail'?'flex':'none';
+  document.getElementById('mail-compose-view').style.display = view==='compose'?'flex':'none';
+  if(view==='list') loadCurrentFolder();
+  if(view==='compose') {
+    document.getElementById('compose-status').textContent='';
+    // Pre-select mailbox in compose from dropdown
+    const fromSel = document.getElementById('compose-from');
+    if(fromSel) fromSel.value = currentMailbox;
   }
 }
 
-async function loadSentEmails() {
-  const isAdmin = currentRole && currentRole.role === 'admin';
-  let query = db.from('emails').select('*').order('created_at', { ascending: false }).limit(20);
-  if (!isAdmin && currentRole) query = query.eq('section', currentRole.section);
+function backToList() { showMailView('list'); replyToData=null; }
+
+function switchMailbox() {
+  currentMailbox = document.getElementById('mail-mailbox-select').value;
+  document.getElementById('mail-email-address').textContent = currentMailbox;
+  loadFolder('inbox', document.getElementById('folder-inbox'));
+}
+
+function loadCurrentFolder() { loadFolder(currentFolder, document.querySelector('.mail-folder-btn.active')); }
+
+async function loadFolder(folder, btn) {
+  currentFolder = folder;
+  document.querySelectorAll('.mail-folder-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const titles = {inbox:'Inbox',sent:'Sent',drafts:'Drafts',trash:'Trash'};
+  document.getElementById('mail-folder-title').textContent = titles[folder]||folder;
+  document.getElementById('mail-email-address').textContent = currentMailbox;
+  showMailView('list');
+  const listEl = document.getElementById('mail-list');
+  listEl.innerHTML = '<div class="loading">Loading...</div>';
+  let query = db.from('inbox_emails').select('*').eq('mailbox_email', currentMailbox).eq('folder', folder).order('created_at',{ascending:false});
   const { data } = await query;
-  const el = document.getElementById('sent-emails-list');
-  if (!el) return;
-  if (!data || data.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div style="font-size:32px;margin-bottom:8px;">📭</div><p>No emails sent yet</p></div>';
+  if(!data||data.length===0){
+    listEl.innerHTML='<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📭</div><p>No emails in '+titles[folder]+'</p></div>';
     return;
   }
-  el.innerHTML = data.map(e => `
-    <div style="border-bottom:1px solid var(--border);padding:12px 0;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-        <div>
-          <p style="font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:2px;">${e.subject}</p>
-          <p style="font-size:12px;color:var(--text-muted);">To: ${e.to_email.length > 40 ? e.to_email.substring(0,40)+'...' : e.to_email}</p>
-          <p style="font-size:12px;color:var(--text-muted);">${e.created_at ? new Date(e.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''}</p>
-        </div>
-        <span class="tag" style="background:#E0F5EE;color:#0A5438;white-space:nowrap;">✓ Sent</span>
+  // Update unread count
+  const unread = data.filter(e=>!e.is_read).length;
+  const countEl = document.getElementById('inbox-count');
+  if(countEl) countEl.textContent = unread>0&&folder==='inbox'?unread:'';
+  listEl.innerHTML = data.map(e=>`
+    <div class="mail-item ${!e.is_read?'unread':''}" onclick="openEmail('${e.id}')">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--purple-pale);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--purple-mid);flex-shrink:0;">
+        ${(e.from_name||e.from_email||'?')[0].toUpperCase()}
       </div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="mail-sender">${e.from_name||e.from_email||'Unknown'}</span>
+          <span class="mail-time">${e.created_at?new Date(e.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):''}</span>
+        </div>
+        <p class="mail-subject">${e.subject||'(no subject)'}</p>
+        <p class="mail-preview">${(e.body_text||'').substring(0,80)}</p>
+      </div>
+      ${!e.is_read?'<div style="width:8px;height:8px;border-radius:50%;background:var(--purple-mid);flex-shrink:0;margin-top:6px;"></div>':''}
     </div>`).join('');
 }
 
+async function openEmail(id) {
+  currentEmailId = id;
+  const { data } = await db.from('inbox_emails').select('*').eq('id',id).single();
+  if(!data) return;
+  // Mark as read
+  await db.from('inbox_emails').update({is_read:true}).eq('id',id);
+  document.getElementById('detail-subject').textContent = data.subject||'(no subject)';
+  document.getElementById('detail-from').textContent = '👤 From: '+(data.from_name?data.from_name+' <'+data.from_email+'>':data.from_email||'Unknown');
+  document.getElementById('detail-to').textContent = '📬 To: '+data.to_email;
+  document.getElementById('detail-date').textContent = '🕐 '+( data.created_at?new Date(data.created_at).toLocaleString('en-GB'):'');
+  const bodyEl = document.getElementById('detail-body');
+  if(data.body_html&&data.body_html.length>0){
+    bodyEl.innerHTML = data.body_html;
+  } else {
+    bodyEl.innerHTML = (data.body_text||'').replace(/\n/g,'<br>');
+  }
+  replyToData = data;
+  showMailView('detail');
+}
+
+function replyToEmail() {
+  if(!replyToData) return;
+  showMailView('compose');
+  document.getElementById('compose-to-email').value = replyToData.from_email||'';
+  document.getElementById('compose-to-type').value = 'individual';
+  toggleComposeTo();
+  document.getElementById('compose-subject').value = 'Re: '+(replyToData.subject||'');
+  document.getElementById('compose-body').value = '\n\n--- Original message ---\nFrom: '+(replyToData.from_name||replyToData.from_email)+'\n\n'+(replyToData.body_text||'');
+  const fromSel = document.getElementById('compose-from');
+  if(fromSel) fromSel.value = currentMailbox;
+}
+
+async function trashEmail() {
+  if(!currentEmailId) return;
+  if(currentFolder==='trash'){
+    await db.from('inbox_emails').delete().eq('id',currentEmailId);
+    showNotif('Email deleted permanently');
+  } else {
+    await db.from('inbox_emails').update({folder:'trash'}).eq('id',currentEmailId);
+    showNotif('Moved to trash');
+  }
+  backToList();
+}
+
+function toggleComposeTo() {
+  const type = document.getElementById('compose-to-type').value;
+  const emailInput = document.getElementById('compose-to-email');
+  const sectionSel = document.getElementById('compose-to-section');
+  emailInput.classList.toggle('hidden', type!=='individual');
+  sectionSel.classList.toggle('hidden', type==='individual');
+}
+
+async function getComposeRecipients() {
+  const type = document.getElementById('compose-to-type').value;
+  if(type==='individual'){
+    const email = document.getElementById('compose-to-email').value.trim();
+    return email?[email]:[];
+  }
+  if(type==='section'){
+    const section = document.getElementById('compose-to-section').value;
+    const{data}=await db.from('members').select('email').eq('section',section).not('email','is',null);
+    return data?data.map(m=>m.email).filter(Boolean):[];
+  }
+  if(type==='all'){
+    const{data}=await db.from('members').select('email').not('email','is',null);
+    return data?data.map(m=>m.email).filter(Boolean):[];
+  }
+  return [];
+}
+
+async function sendComposedEmail() {
+  const fromEmail = document.getElementById('compose-from').value;
+  const subject = document.getElementById('compose-subject').value.trim();
+  const body = document.getElementById('compose-body').value.trim();
+  const statusEl = document.getElementById('compose-status');
+  const sendBtn = document.getElementById('compose-send-btn');
+  if(!subject){statusEl.textContent='⚠ Please enter a subject';return;}
+  if(!body){statusEl.textContent='⚠ Please write a message';return;}
+  const recipients = await getComposeRecipients();
+  if(recipients.length===0){statusEl.textContent='⚠ No recipients found';return;}
+  sendBtn.textContent='⏳ Sending...'; sendBtn.disabled=true; statusEl.textContent='';
+  const toType = document.getElementById('compose-to-type').value;
+  const section = toType==='section'?document.getElementById('compose-to-section').value:toType==='all'?'All Members':recipients[0];
+  try {
+    await sendEmailViaResend(recipients, subject, body, FROM_NAME_DEFAULT, fromEmail);
+    // Save to sent folder
+    await db.from('inbox_emails').insert([{
+      mailbox_email: fromEmail,
+      from_email: fromEmail,
+      from_name: FROM_NAME_DEFAULT,
+      to_email: recipients.join(', '),
+      subject, body_text: body, folder:'sent', is_read:true
+    }]);
+    // Also save to emails log
+    await db.from('emails').insert([{from_name:FROM_NAME_DEFAULT,to_email:recipients.join(', '),subject,body,section,status:'sent'}]);
+    showNotif('Email sent to '+recipients.length+' recipient'+(recipients.length>1?'s':'')+'! ✓');
+    backToList();
+    // Switch to sent folder to show it
+    setTimeout(()=>loadFolder('sent',document.getElementById('folder-sent')),500);
+  } catch(e) {
+    statusEl.style.color='#C00';
+    statusEl.textContent='✕ '+e.message;
+  }
+  sendBtn.textContent='📨 Send'; sendBtn.disabled=false;
+}
+
+async function saveDraft() {
+  const fromEmail = document.getElementById('compose-from').value;
+  const subject = document.getElementById('compose-subject').value;
+  const body = document.getElementById('compose-body').value;
+  await db.from('inbox_emails').insert([{
+    mailbox_email: fromEmail,
+    from_email: fromEmail,
+    from_name: FROM_NAME_DEFAULT,
+    to_email: document.getElementById('compose-to-email').value||'',
+    subject: subject||'(draft)',
+    body_text: body,
+    folder: 'drafts',
+    is_read: true
+  }]);
+  showNotif('Draft saved ✓');
+  backToList();
+  setTimeout(()=>loadFolder('drafts',document.getElementById('folder-drafts')),500);
+}
+
+async function testEmail() {
+  if(!currentUser) return;
+  showNotif('Sending test email...');
+  try {
+    await sendEmailViaResend(currentUser.email,'Test Email — 1st Terrington Webmail','This is a test email from your Scout group webmail system. If you can read this everything is working correctly! 🎉',FROM_NAME_DEFAULT,FROM_EMAIL);
+    showNotif('Test email sent to '+currentUser.email+' ✓');
+  } catch(e) {
+    showNotif('Test failed: '+e.message);
+  }
+}
+
 async function sendJoinNotificationEmail(joinData) {
-  // Auto-email when a join request comes in
   const sectionEmails = {
-    'Squirrels (4–6)': 'squirrels@1st-terrington.co.uk',
-    'Beavers (5½–8)': 'beavers@1st-terrington.co.uk',
-    'Cubs (8–10½)': 'cubs@1st-terrington.co.uk',
-    'Scouts (10½–14)': 'scouts@1st-terrington.co.uk',
-    'Explorers (14–18)': 'explorers@1st-terrington.co.uk'
+    'Squirrels (4–6)':'squirrels@1st-terrington.co.uk',
+    'Beavers (5½–8)':'beavers@1st-terrington.co.uk',
+    'Cubs (8–10½)':'cubs@1st-terrington.co.uk',
+    'Scouts (10½–14)':'scouts@1st-terrington.co.uk',
+    'Explorers (14–18)':'explorers@1st-terrington.co.uk'
   };
-  const leaderEmail = sectionEmails[joinData.section] || FROM_EMAIL;
-  const body = `New join request received on the website:\n\nChild: ${joinData.child_name}\nSection: ${joinData.section}\nDate of Birth: ${joinData.dob}\n\nParent/Guardian: ${joinData.parent_name}\nRelationship: ${joinData.relationship}\nEmail: ${joinData.email}\nPhone: ${joinData.phone}\nAddress: ${joinData.address}\n\nAdditional notes: ${joinData.notes||'None'}\n\nPlease log into the admin area to accept or decline this request.`;
-  await sendEmailViaResend(
-    [leaderEmail, FROM_EMAIL],
-    'New Join Request — ' + joinData.child_name + ' (' + joinData.section + ')',
-    body,
-    '1st Terrington Website'
-  );
+  const leaderEmail = sectionEmails[joinData.section]||FROM_EMAIL;
+  const body = `New join request received:\n\nChild: ${joinData.child_name}\nSection: ${joinData.section}\nDate of Birth: ${joinData.dob}\n\nParent/Guardian: ${joinData.parent_name}\nEmail: ${joinData.email}\nPhone: ${joinData.phone}\nAddress: ${joinData.address}\n\nNotes: ${joinData.notes||'None'}\n\nPlease log into the admin area to accept or decline.`;
+  try {
+    await sendEmailViaResend([leaderEmail,FROM_EMAIL],'New Join Request — '+joinData.child_name+' ('+joinData.section+')',body,'1st Terrington Website',FROM_EMAIL);
+    // Save to join mailbox inbox
+    await db.from('inbox_emails').insert([{
+      mailbox_email:'join@1st-terrington.co.uk',
+      from_email:joinData.email,
+      from_name:joinData.parent_name,
+      to_email:'join@1st-terrington.co.uk',
+      subject:'New Join Request — '+joinData.child_name,
+      body_text:body,
+      folder:'inbox',is_read:false
+    }]);
+  } catch(e){console.log('Join notification email error:',e);}
 }
 
 async function sendJoinConfirmationEmail(joinData) {
-  // Auto-email to the parent confirming receipt
-  if (!joinData.email) return;
-  const body = `Dear ${joinData.parent_name},\n\nThank you for registering ${joinData.child_name} for ${joinData.section} at 1st Terrington Scout Group!\n\nWe've received your registration and a section leader will be in touch within 48 hours to arrange a taster session.\n\nIf you have any questions in the meantime, please don't hesitate to get in touch.\n\nWarm regards,\n1st Terrington Scout Group`;
-  await sendEmailViaResend(
-    joinData.email,
-    'Registration Received — Welcome to 1st Terrington Scouts! 🎉',
-    body,
-    '1st Terrington Scout Group'
-  );
+  if(!joinData.email) return;
+  const body = `Dear ${joinData.parent_name},\n\nThank you for registering ${joinData.child_name} for ${joinData.section} at 1st Terrington Scout Group!\n\nWe have received your registration and a section leader will be in touch within 48 hours to arrange a taster session.\n\nIf you have any questions in the meantime please do not hesitate to get in touch.\n\nWarm regards,\n1st Terrington Scout Group`;
+  try {
+    await sendEmailViaResend(joinData.email,'Registration Received — Welcome to 1st Terrington Scouts! 🎉',body,'1st Terrington Scout Group',FROM_EMAIL);
+  } catch(e){console.log('Confirmation email error:',e);}
 }
+
+function loadSentEmails(){loadFolder('sent',null);}
 
 window.addEventListener('load',()=>{loadHomeEvents();loadHomeNews();loadSiteSettings();});
 
