@@ -1637,16 +1637,26 @@ function showMailView(view) {
   document.getElementById('mail-list-view').style.display = view==='list'?'block':'none';
   document.getElementById('mail-detail-view').style.display = view==='detail'?'flex':'none';
   document.getElementById('mail-compose-view').style.display = view==='compose'?'flex':'none';
-  if(view==='list') loadCurrentFolder();
+  if(view==='list') {
+    // Only reload if list is empty or showing loading state — prevents flicker
+    const listEl = document.getElementById('mail-list');
+    const isEmpty = !listEl || listEl.innerHTML.trim()==='' || listEl.innerHTML.includes('Loading') || listEl.innerHTML.includes('loading');
+    if(isEmpty) loadCurrentFolder();
+  }
   if(view==='compose') {
     document.getElementById('compose-status').textContent='';
-    // Pre-select mailbox in compose from dropdown
     const fromSel = document.getElementById('compose-from');
     if(fromSel) fromSel.value = currentMailbox;
   }
 }
 
-function backToList() { showMailView('list'); replyToData=null; }
+function backToList() {
+  // Hide detail/compose without triggering a reload
+  document.getElementById('mail-list-view').style.display = 'block';
+  document.getElementById('mail-detail-view').style.display = 'none';
+  document.getElementById('mail-compose-view').style.display = 'none';
+  replyToData = null;
+}
 
 function switchMailbox() {
   currentMailbox = document.getElementById('mail-mailbox-select').value;
@@ -1789,9 +1799,22 @@ async function sendComposedEmail() {
     // Also save to emails log
     await db.from('emails').insert([{from_name:FROM_NAME_DEFAULT,to_email:recipients.join(', '),subject,body,section,status:'sent'}]);
     showNotif('Email sent to '+recipients.length+' recipient'+(recipients.length>1?'s':'')+'! ✓');
-    backToList();
-    // Switch to sent folder to show it
-    setTimeout(()=>loadFolder('sent',document.getElementById('folder-sent')),500);
+    // Reset compose form
+    document.getElementById('compose-subject').value='';
+    document.getElementById('compose-body').value='';
+    document.getElementById('compose-to-email').value='';
+    document.getElementById('compose-status').textContent='';
+    // Go back and reload inbox cleanly
+    currentFolder='inbox';
+    document.querySelectorAll('.mail-folder-btn').forEach(b=>b.classList.remove('active'));
+    const inboxBtn=document.getElementById('folder-inbox');
+    if(inboxBtn)inboxBtn.classList.add('active');
+    document.getElementById('mail-list-view').style.display='block';
+    document.getElementById('mail-compose-view').style.display='none';
+    document.getElementById('mail-detail-view').style.display='none';
+    const listEl=document.getElementById('mail-list');
+    if(listEl)listEl.innerHTML='<div class="loading">Loading...</div>';
+    loadFolder('inbox',inboxBtn);
   } catch(e) {
     statusEl.style.color='#C00';
     statusEl.textContent='✕ '+e.message;
@@ -1814,8 +1837,11 @@ async function saveDraft() {
     is_read: true
   }]);
   showNotif('Draft saved ✓');
-  backToList();
-  setTimeout(()=>loadFolder('drafts',document.getElementById('folder-drafts')),500);
+  document.getElementById('mail-compose-view').style.display='none';
+  document.getElementById('mail-list-view').style.display='block';
+  const listEl2=document.getElementById('mail-list');
+  if(listEl2)listEl2.innerHTML='<div class="loading">Loading...</div>';
+  loadFolder('drafts',document.getElementById('folder-drafts'));
 }
 
 async function testEmail() {
