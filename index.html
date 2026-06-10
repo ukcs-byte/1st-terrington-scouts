@@ -1673,11 +1673,18 @@ async function loadFolder(folder, btn) {
   const titles = {inbox:'Inbox',sent:'Sent',drafts:'Drafts',trash:'Trash'};
   document.getElementById('mail-folder-title').textContent = titles[folder]||folder;
   document.getElementById('mail-email-address').textContent = currentMailbox;
-  showMailView('list');
+  // Show list view directly without triggering showMailView (avoids reload loop)
+  document.getElementById('mail-list-view').style.display = 'block';
+  document.getElementById('mail-detail-view').style.display = 'none';
+  document.getElementById('mail-compose-view').style.display = 'none';
   const listEl = document.getElementById('mail-list');
   listEl.innerHTML = '<div class="loading">Loading...</div>';
-  let query = db.from('inbox_emails').select('*').eq('mailbox_email', currentMailbox).eq('folder', folder).order('created_at',{ascending:false});
-  const { data } = await query;
+  // Query by mailbox_email OR to_email to catch all incoming emails for this mailbox
+  const { data: data1 } = await db.from('inbox_emails').select('*').eq('mailbox_email', currentMailbox).eq('folder', folder).order('created_at',{ascending:false});
+  const { data: data2 } = await db.from('inbox_emails').select('*').ilike('to_email', '%'+currentMailbox+'%').eq('folder', folder).order('created_at',{ascending:false});
+  // Merge and deduplicate by id
+  const seen = new Set();
+  const data = [...(data1||[]), ...(data2||[])].filter(e => { if(seen.has(e.id)) return false; seen.add(e.id); return true; }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   if(!data||data.length===0){
     listEl.innerHTML='<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📭</div><p>No emails in '+titles[folder]+'</p></div>';
     return;
